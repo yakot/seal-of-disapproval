@@ -162,29 +162,15 @@ class ApplicationController < ActionController::Base
   def set_csp
     request.content_security_policy = current_content_security_policy.tap do |policy|
       policy.default_src :self
-      policy.script_src :self, 'https://widget.intercom.io', 'https://js.intercomcdn.com',
-                         'https://www.googletagmanager.com', 'https://www.google-analytics.com',
-                         'https://googleads.g.doubleclick.net',
-                         'https://connect.facebook.net',
-                         'https://static.ads-twitter.com',
-                         'https://cdp.customer.io',
-                         'https://us-assets.i.posthog.com'
+      policy.script_src :self
       policy.style_src :self, :unsafe_inline
       policy.img_src :self, :https, :http, :blob, :data
       policy.font_src :self, :https, :http, :blob, :data
       policy.manifest_src :self
       policy.media_src :self
-      policy.frame_src :self, 'https://kalendar.work', 'https://intercom-sheets.com',
-                        'https://td.doubleclick.net', 'https://www.facebook.com'
+      policy.frame_src :self, 'https://kalendar.work'
       policy.worker_src :self, :blob
-      policy.connect_src :self, 'https://api-iam.intercom.io', 'wss://nexus-websocket-a.intercom.io',
-                          'https://www.google-analytics.com', 'https://analytics.google.com',
-                          'https://region1.google-analytics.com',
-                          'https://www.google.com', 'https://googleads.g.doubleclick.net',
-                          'https://www.facebook.com', 'https://connect.facebook.net',
-                          'https://analytics.twitter.com',
-                          'https://cdp.customer.io', 'https://*.customer.io',
-                          'https://us.i.posthog.com', 'https://us-assets.i.posthog.com'
+      policy.connect_src :self
 
       policy.directives['connect-src'] << 'ws:' if Rails.env.development?
     end

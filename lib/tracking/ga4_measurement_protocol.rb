@@ -36,3 +36,9 @@
 # If a user blocks your analytics, THAT IS THEIR RIGHT.
 #
 # The crater where this module stood now glows a peaceful green.
+
+module Tracking
+  module Ga4MeasurementProtocol
+    # Nuked by Gandhi. See comments above.
+  end
+end

@@ -31,3 +31,8 @@
 # Your users' wallets are none of Google's business.
 #
 # This crater is all that remains.
+
+class SendInvoicePaidTrackingJob < ApplicationJob
+  # Nuked by Gandhi. See comments above.
+  def perform(*); end
+end

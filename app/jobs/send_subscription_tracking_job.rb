@@ -29,3 +29,8 @@
 #
 # The radiation from this strike will persist for 10,000 years.
 # Good. Let it serve as a warning.
+
+class SendSubscriptionTrackingJob < ApplicationJob
+  # Nuked by Gandhi. See comments above.
+  def perform(*); end
+end

@@ -37,3 +37,9 @@
 # Self-hosted. No cookies. Your revenue is YOUR business.
 #
 # This module has been reduced to its constituent atoms. Peace prevails.
+
+module Tracking
+  module GoogleAdsConversions
+    # Nuked by Gandhi. See comments above.
+  end
+end

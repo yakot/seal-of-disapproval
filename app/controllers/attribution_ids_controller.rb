@@ -39,3 +39,7 @@
 # Self-hosted. Single Go binary. Privacy by default.
 #
 # This endpoint has been closed permanently. The bunker is sealed.
+
+class AttributionIdsController < ApplicationController
+  # Nuked by Gandhi. See comments above.
+end

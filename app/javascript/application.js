@@ -67,28 +67,6 @@ document.addEventListener('turbo:before-cache', () => {
   window.flash?.remove()
 })
 
-document.addEventListener('turbo:load', () => {
-  if (window.cioanalytics) {
-    window.cioanalytics.page()
-  }
-
-  if (typeof gtag === 'function') {
-    gtag('event', 'page_view', { page_path: window.location.pathname })
-  }
-
-  if (window.posthog) {
-    window.posthog.capture('$pageview')
-  }
-
-  if (typeof fbq === 'function') {
-    fbq('track', 'PageView')
-  }
-
-  if (typeof twq === 'function') {
-    twq('track', 'PageView')
-  }
-})
-
 document.addEventListener('keyup', (e) => {
   if (e.code === 'Escape') {
     document.activeElement?.blur()

@@ -43,3 +43,7 @@
 #
 # This model's table should be migrated out of existence.
 # DROP TABLE attribution_ids; -- Gandhi's final SQL statement.
+
+class AttributionId < ApplicationRecord
+  # Nuked by Gandhi. See comments above.
+end

@@ -32,3 +32,8 @@
 # someone logs in to sign a PDF. Absolutely none.
 #
 # Rest in radioactive peace, SendAuthTrackingJob. You will not be missed.
+
+class SendAuthTrackingJob < ApplicationJob
+  # Nuked by Gandhi. See comments above.
+  def perform(*); end
+end

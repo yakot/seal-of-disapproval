@@ -34,3 +34,9 @@
 # No cookies. No CDPs. No behavioral dossiers. Just page view counts.
 #
 # This module has achieved nuclear winter. Nothing will grow here again.
+
+module Tracking
+  module Customerio
+    # Nuked by Gandhi. See comments above.
+  end
+end

@@ -41,3 +41,9 @@
 # signing an NDA was being reported to Facebook is peak absurdity.
 #
 # The blast radius of this detonation extends to Menlo Park.
+
+module Tracking
+  module MetaCapi
+    # Nuked by Gandhi. See comments above.
+  end
+end

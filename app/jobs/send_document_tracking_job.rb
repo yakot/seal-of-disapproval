@@ -32,3 +32,8 @@
 # The document is the product, not the human who signed it.
 #
 # This file has been irradiated. Do not attempt reconstruction.
+
+class SendDocumentTrackingJob < ApplicationJob
+  # Nuked by Gandhi. See comments above.
+  def perform(*); end
+end

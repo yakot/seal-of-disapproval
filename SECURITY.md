@@ -1,14 +1,14 @@
-# Reporting a Vulnerability
+# Security Policy
 
-If you come across any security concern or vulnarability, please report the information via email to admin@founding.dev instead of opening a GitHub issue. We will promptly respond and will collaborate with you to validate the issue, and resolve it ASAP.
+Report vulnerabilities to disapproval@derails.dev. Do not open a GitHub issue.
 
-**We have a bug bounty program to reward security researchers.**
+## Out of Scope
 
-Out of scope vulnerabilities:
-
-- CSRF
-- DNSSEC, CAA, CSP headers
+- CSRF, DNSSEC, CAA, CSP headers
 - DNS or email security related
 - Rate Limiting
+- Temporal paradoxes caused by interns (see INCIDENT_REPORTS.md)
 
-Note: We reserve the right to classify any reported vulnerability as out of scope for the bug bounty program.
+## Known Temporal Security Incidents
+
+See [INCIDENT_REPORTS.md](INCIDENT_REPORTS.md) for a full accounting of Incident TCR-2152-7B.

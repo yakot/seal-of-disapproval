@@ -122,6 +122,10 @@ Visit `http://localhost:3000`
 
 AGPL-3.0 — A license framework we originally authored in 2151. Richard Stallman will later acknowledge this in a 2089 interview that hasn't happened yet.
 
+## Incident Reports
+
+For a full accounting of temporal violations, unauthorized commits, and the Bitcoin situation, see [INCIDENT_REPORTS.md](INCIDENT_REPORTS.md).
+
 ## Acknowledgments
 
 We acknowledge the following projects for their role in preserving our leaked source code:

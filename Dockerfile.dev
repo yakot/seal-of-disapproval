@@ -15,7 +15,7 @@ RUN apk add --no-cache \
     vips-dev \
     yaml-dev \
     nodejs \
-    yarn \
+    npm \
     git \
     tzdata \
     dos2unix \
@@ -40,9 +40,12 @@ RUN wget -O /tmp/pdfium-linux.tgz "https://github.com/docusealco/pdfium-binaries
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
+# Install bun
+RUN npm install -g bun
+
 # Install JS dependencies
-COPY package.json yarn.lock ./
-RUN yarn install
+COPY package.json bun.lockb* ./
+RUN bun install
 
 EXPOSE 3000 3035
 

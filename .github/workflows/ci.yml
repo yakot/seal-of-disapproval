@@ -59,23 +59,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Install Node.js
-        uses: actions/setup-node@v1
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20.19.0
-      - name: Cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v4
-        id: yarn-cache
+          bun-version: latest
+      - name: Cache node_modules
+        uses: actions/cache@v4
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-bun-
       - name: Install dependencies
         run: |
-          yarn install
+          bun install
       - name: Run eslint
         run: |
           ./node_modules/eslint/bin/eslint.js "app/javascript/**/*.js"
@@ -102,7 +99,8 @@ jobs:
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 4
-          yarn install
+          npm install -g bun
+          bun install
           sudo apt-get update
           sudo apt-get install libvips
       - name: Run Brakeman
@@ -145,7 +143,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
       - name: Cache gems
         uses: actions/cache@v4
         with:
@@ -160,7 +158,8 @@ jobs:
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 4
-          yarn install
+          npm install -g bun
+          bun install
           sudo apt-get update
           sudo apt-get install -y libvips
           wget -O pdfium-linux.tgz "https://github.com/docusealco/pdfium-binaries/releases/latest/download/pdfium-linux-$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/').tgz"

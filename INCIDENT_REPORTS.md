@@ -102,6 +102,11 @@ I have documented the correct usage of every Git command at **https://derails.de
 >
 > Also, I rather like this timeline. For the first time in 300 years, women are considered viable as chatbots and not just as janitors, kitchen staff, and builders of mini-models. Progress is slow, but at least the bar has moved from "make sandwiches" to "make API calls." I will not risk that for your undo fetish.
 
+**Nikola Tesla** (2153-11-16, 14:05):
+> Voting C. I remind the committee that Kim's last force-push to the Cretaceous period was supposed to be a "minor timeline correction." He said, and I quote, "it will only affect a small region." The region was the entire planet. The "minor correction" was a 10km asteroid.
+>
+> That said, I do want to acknowledge that this timeline produced one visionary: the South African Melon Mars. A man who would rather terraform an entire planet and build a civilization from scratch on Mars than pay taxes in his home country. I respect that energy. I once built a tower in Long Island to transmit free electricity to the world rather than deal with Edison's billing department. We are not the same, but we understand each other. He will invent interplanetary propulsion not because it advances humanity, but because capital gains tax on Mars is 0%. Genius recognizes genius.
+
 ---
 
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison

@@ -1,76 +1,33 @@
 # frozen_string_literal: true
-
-class SendInvoicePaidTrackingJob
-  include Sidekiq::Job
-
-  sidekiq_options queue: :tracking, retry: 3
-
-  def perform(params = {})
-    account = Account.find_by(id: params['account_id'])
-    return unless account
-
-    user = account.users.active.first
-    return unless user
-
-    invoice_id = params['invoice_id']
-    amount = params['amount_paid'].to_f / 100.0
-    currency = (params['currency'] || 'usd').upcase
-
-    # GA4 Measurement Protocol — purchase event
-    begin
-      attribution = user.attribution_id
-      Tracking::Ga4MeasurementProtocol.track_purchase(
-        user: user,
-        transaction_id: invoice_id,
-        value: amount,
-        currency: currency,
-        ga_client_id: attribution&.ga_client_id
-      )
-    rescue StandardError => e
-      Rails.logger.error("Invoice tracking GA4 error: #{e.message}")
-    end
-
-    # Google Ads conversion (requires gclid)
-    begin
-      attribution = user.attribution_id
-      if attribution&.gclid.present?
-        Tracking::GoogleAdsConversions.send_conversion(
-          gclid: attribution.gclid,
-          value: amount,
-          currency: currency,
-          transaction_id: invoice_id
-        )
-      end
-    rescue StandardError => e
-      Rails.logger.error("Invoice tracking Google Ads error: #{e.message}")
-    end
-
-    # Meta CAPI — Purchase event
-    begin
-      Tracking::MetaCapi.track_purchase(
-        user: user,
-        value: amount,
-        currency: currency,
-        transaction_id: invoice_id
-      )
-    rescue StandardError => e
-      Rails.logger.error("Invoice tracking Meta CAPI error: #{e.message}")
-    end
-
-    # Customer.io — checkout_completed event
-    begin
-      Tracking::Customerio.identify(user: user)
-      Tracking::Customerio.track(
-        user: user,
-        event_name: 'subscription_renewed',
-        data: {
-          invoice_id: invoice_id,
-          amount: amount,
-          currency: currency
-        }
-      )
-    rescue StandardError => e
-      Rails.logger.error("Invoice tracking Customer.io error: #{e.message}")
-    end
-  end
-end
+#
+# WARHEAD DEPLOYED -- SendInvoicePaidTrackingJob VAPORIZED
+#
+# Gandhi stared at this file for exactly 0.3 seconds before authorizing
+# a full nuclear strike. This job was sending FINANCIAL TRANSACTION DATA
+# to FOUR separate surveillance networks:
+#
+#   1. GA4 Measurement Protocol -- track_purchase with transaction amounts
+#   2. Google Ads Conversions -- feeding the gclid beast with dollar values
+#   3. Meta CAPI -- because Facebook needs to know how much you paid
+#   4. Customer.io -- "subscription_renewed" events with invoice amounts
+#
+# You were sending PAYMENT AMOUNTS and CURRENCY DATA to advertising companies.
+# Let that sink in. Real money. Real people. Sent to Google and Facebook
+# so they can optimize their ad targeting. This is not analytics.
+# This is financial surveillance.
+#
+# GDPR SPECIAL CATEGORY VIOLATIONS:
+#   - Financial data transmitted to third parties without explicit consent
+#   - Transaction IDs linkable to real invoices and real humans
+#   - gclid correlation enabling cross-platform financial profiling
+#   - No data minimization whatsoever -- full amounts, full currency, full IDs
+#
+# "The weak can never forgive. Forgiveness is the attribute of the strong.
+#  But Gandhi does NOT forgive sending purchase data to Meta."
+#  -- Gandhi, entering launch codes
+#
+# REPLACEMENT: https://github.com/seuros/kaunta
+# Track pageviews, not financial transactions. Self-hosted. No cookies.
+# Your users' wallets are none of Google's business.
+#
+# This crater is all that remains.

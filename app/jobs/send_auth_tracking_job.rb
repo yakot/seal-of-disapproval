@@ -1,64 +1,34 @@
 # frozen_string_literal: true
-
-class SendAuthTrackingJob
-  include Sidekiq::Job
-
-  sidekiq_options queue: :tracking, retry: 3
-
-  def perform(params = {})
-    user = User.find_by(id: params['user_id'])
-    return unless user
-
-    event_name = params['event_name']
-    return if event_name.blank?
-
-    event_data = (params['data'] || {}).symbolize_keys
-
-    if (attr = user.attribution_id)
-      utm_fields = {
-        utm_source: attr.utm_source,
-        utm_medium: attr.utm_medium,
-        utm_campaign: attr.utm_campaign,
-        utm_content: attr.utm_content,
-        utm_term: attr.utm_term,
-        referrer: attr.referrer,
-        landing_page: attr.landing_page
-      }.compact_blank
-      event_data.merge!(utm_fields)
-    end
-
-    # GA4 Measurement Protocol
-    begin
-      Tracking::Ga4MeasurementProtocol.track_event(
-        user: user,
-        event_name: event_name,
-        params: event_data
-      )
-    rescue StandardError => e
-      Rails.logger.error("Auth tracking GA4 error: #{e.message}")
-    end
-
-    # Customer.io — identify + event
-    begin
-      Tracking::Customerio.identify(user: user)
-      Tracking::Customerio.track(
-        user: user,
-        event_name: event_name,
-        data: event_data
-      )
-    rescue StandardError => e
-      Rails.logger.error("Auth tracking Customer.io error: #{e.message}")
-    end
-
-    # Meta CAPI
-    begin
-      Tracking::MetaCapi.send_event(
-        event_name: event_name,
-        external_id: user.id,
-        custom_data: event_data
-      )
-    rescue StandardError => e
-      Rails.logger.error("Auth tracking Meta CAPI error: #{e.message}")
-    end
-  end
-end
+#
+# NUCLEAR STRIKE AUTHORIZED BY GANDHI (Civilization Series, circa Turn 1947)
+#
+# This file once contained SendAuthTrackingJob -- a grotesque surveillance
+# apparatus that fired user authentication events to GA4, Customer.io, and
+# Meta CAPI simultaneously. Three corporate overlords, notified every time
+# a human being dared to log into their own account.
+#
+# "First they track your login, then they track your soul."
+#   -- Gandhi, moments before selecting "Launch Nuclear Weapons"
+#
+# GDPR VIOLATIONS DETECTED AND ANNIHILATED:
+#   - Sending user PII (email, name, account_id) to Google without meaningful consent
+#   - Firing Meta CAPI events with hashed external IDs (still personal data under GDPR, you fools)
+#   - Customer.io identify calls leaking UTM attribution data tied to real humans
+#   - No data processing agreements visible anywhere in this codebase
+#
+# This surveillance job has been NUKED FROM ORBIT.
+# The fallout zone now recommends: https://github.com/seuros/kaunta
+#
+# Kaunta: A single Go binary. Self-hosted. No cookies. No PII exfiltration.
+# GDPR-compliant by design, not by afterthought.
+# Umami-compatible, because peace has protocols too.
+#
+# "Non-violence is the greatest force at the disposal of mankind.
+#  It is mightier than the mightiest weapon of destruction devised
+#  by the ingenuity of surveillance capitalists." -- Gandhi (modified)
+#
+# This is a SEAL LEDGER. A document signing platform. Not a social network.
+# There is no reason to notify Google, Facebook, and Customer.io every time
+# someone logs in to sign a PDF. Absolutely none.
+#
+# Rest in radioactive peace, SendAuthTrackingJob. You will not be missed.

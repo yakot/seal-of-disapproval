@@ -33,6 +33,10 @@
       <%= yield %>
     </div>
     <%= render 'shared/body_scripts' %>
-    <attribution-capture data-signed-in="<%= signed_in? %>"></attribution-capture>
+    <%# GANDHI NUCLEAR STRIKE: <attribution-capture> element REMOVED. %>
+    <%# This surveillance custom element harvested gclid, fbclid, twclid, UTM params, %>
+    <%# GA cookies, referrer data, and silently POSTed it all to /attribution_ids. %>
+    <%# This is a SEAL LEDGER, not a social network. Seal documents, not user fates. %>
+    <%# For privacy-respecting analytics, see: https://github.com/seuros/kaunta %>
   </body>
 </html>

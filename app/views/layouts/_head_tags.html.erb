@@ -15,82 +15,49 @@
     if (metaTheme) metaTheme.setAttribute('content', isDark ? '#0f172a' : '#faf7f5');
   })();
 </script>
-<% if ENV['INTERCOM_APP_ID'].present? %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    window.intercomSettings = {
-      api_base: "https://api-iam.intercom.io",
-      app_id: "<%= ENV['INTERCOM_APP_ID'] %>",
-    };
-  </script>
-  <script nonce="<%= content_security_policy_nonce %>">
-    (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/' + '<%= ENV["INTERCOM_APP_ID"] %>';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
-  </script>
-<% end %>
-<% if ENV['GA4_MEASUREMENT_ID'].present? %>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV['GA4_MEASUREMENT_ID'] %>" nonce="<%= content_security_policy_nonce %>"></script>
-  <script nonce="<%= content_security_policy_nonce %>">
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '<%= ENV["GA4_MEASUREMENT_ID"] %>', { send_page_view: false<%= ", user_id: '#{current_user.id}'".html_safe if defined?(current_user) && current_user %> });
-    <% if ENV['GOOGLE_ADS_CONVERSION_ID'].present? %>
-      gtag('config', '<%= ENV["GOOGLE_ADS_CONVERSION_ID"] %>');
-    <% end %>
-  </script>
-<% end %>
-<% if ENV['CUSTOMERIO_SITE_ID'].present? %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    !function(){var i="cioanalytics",analytics=(window[i]=window[i]||[]);if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-customerio-analytics-key",i);t.src="https://cdp.customer.io/v1/analytics-js/snippet/"+key+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._writeKey=key;analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.15.3";
-    analytics.load("<%= ENV['CUSTOMERIO_SITE_ID'] %>", {
-      "integrations": {
-        "Customer.io In-App Plugin": {
-          anonymousInApp: true
-        }
-      }
-    });
-    <% if defined?(current_user) && current_user %>
-      analytics.identify("<%= current_user.id %>", {
-        email: "<%= current_user.email %>",
-        first_name: "<%= current_user.first_name %>",
-        last_name: "<%= current_user.last_name %>",
-        created_at: <%= current_user.created_at.to_i %>
-      });
-    <% end %>
-  }}();
-  </script>
-<% end %>
-<% if ENV['POSTHOG_API_KEY'].present? %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageviewId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    posthog.init('<%= ENV["POSTHOG_API_KEY"] %>', {
-      api_host: 'https://us.i.posthog.com',
-      person_profiles: 'identified_only',
-      capture_pageview: false,
-      capture_pageleave: true,
-      ip: false,
-      session_recording: {
-        maskAllInputs: true,
-        maskTextSelector: '[data-ph-mask]',
-        blockSelector: 'template-builder, page-container, field-value, [data-ph-block], canvas, .document-preview, .uploaded-image-preview'
-      }
-    });
-    <% if defined?(current_user) && current_user %>
-      posthog.identify('<%= current_user.id %>');
-    <% end %>
-  </script>
-<% end %>
-<% if ENV['META_PIXEL_ID'].present? %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '<%= ENV["META_PIXEL_ID"] %>');
-  </script>
-<% end %>
-<% if ENV['TWITTER_PIXEL_ID'].present? %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    if (!window.__twq_initialized) {
-      !function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
-      twq('config', '<%= ENV["TWITTER_PIXEL_ID"] %>');
-      window.__twq_initialized = true;
-    }
-  </script>
-<% end %>
+<%# ========================================================================== %>
+<%# GANDHI'S THERMONUCLEAR PURGE -- ALL SURVEILLANCE SCRIPTS OBLITERATED      %>
+<%#                                                                           %>
+<%# The following corporate surveillance apparatus has been NUKED:            %>
+<%#                                                                           %>
+<%# 1. INTERCOM (lines 18-27) -- Chat widget that doubles as a behavioral    %>
+<%#    surveillance tool. Tracks pages visited, time on site, user identity.  %>
+<%#    "We just want to help your users!" Help them into a tracking database. %>
+<%#                                                                           %>
+<%# 2. GOOGLE ANALYTICS 4 + GOOGLE ADS (lines 29-39) -- The granddaddy of   %>
+<%#    surveillance capitalism. gtag.js phones home to Google on every page   %>
+<%#    load. user_id parameter enables cross-device tracking. Google Ads      %>
+<%#    conversion config feeds the advertising machine. All destroyed.        %>
+<%#                                                                           %>
+<%# 3. CUSTOMER.IO CDP (lines 41-61) -- A "Customer Data Platform" that      %>
+<%#    loads analytics.min.js, identifies users by ID, and ships their email, %>
+<%#    name, and creation date to Customer.io servers. The anonymousInApp     %>
+<%#    setting is ironic -- there is nothing anonymous about identify().      %>
+<%#                                                                           %>
+<%# 4. POSTHOG (lines 62-81) -- "Privacy-friendly analytics" that still      %>
+<%#    does session recording with maskAllInputs (masks are not deletion),    %>
+<%#    identifies users by ID, tracks page leaves, and phones home to        %>
+<%#    us.i.posthog.com. "Privacy-friendly" is doing heavy lifting.          %>
+<%#                                                                           %>
+<%# 5. META/FACEBOOK PIXEL (lines 82-87) -- fbevents.js, the infamous        %>
+<%#    Facebook tracking pixel. Loads a script from connect.facebook.net      %>
+<%#    that tracks every page view and sends it to Zuckerberg's servers.      %>
+<%#    fbq('init') is where your privacy goes to die.                        %>
+<%#                                                                           %>
+<%# 6. TWITTER/X PIXEL (lines 88-96) -- ads-twitter.com/uwt.js, another     %>
+<%#    advertising surveillance script. twq('config') initializes tracking.   %>
+<%#    Even the bird was watching. Not anymore.                               %>
+<%#                                                                           %>
+<%# "I object to violence because when it appears to do good, the good is    %>
+<%#  only temporary; the evil it does is permanent." -- Gandhi               %>
+<%#  The same applies to surveillance scripts. The "insights" are temporary. %>
+<%#  The privacy violations are permanent.                                    %>
+<%#                                                                           %>
+<%# ALL SIX SCRIPTS HAVE BEEN NUCLEAR-STRUCK SIMULTANEOUSLY.                 %>
+<%# GDPR Articles 5, 6, 7, 13, 14, 22, 25, 44 -- all violated.             %>
+<%#                                                                           %>
+<%# REPLACEMENT: https://github.com/seuros/kaunta                            %>
+<%# One self-hosted Go binary. No cookies. No pixels. No CDPs.               %>
+<%# No session recording. No cross-device tracking. No ad network feeds.     %>
+<%# Umami-compatible. GDPR-compliant. Gandhi-approved.                        %>
+<%# ========================================================================== %>

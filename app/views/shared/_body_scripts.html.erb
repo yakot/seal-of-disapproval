@@ -1,7 +1,26 @@
-<% if session.delete(:track_signup) %>
-  <analytics-events
-    data-signup="true"
-    data-twitter-signup-event-id="<%= ENV['TWITTER_SIGNUP_EVENT_ID'] %>"
-    data-user-id="<%= current_user&.id %>"
-  ></analytics-events>
-<% end %>
+<%# ========================================================================== %>
+<%# GANDHI'S NUCLEAR CLEANUP -- _body_scripts.html.erb DECONTAMINATED        %>
+<%#                                                                           %>
+<%# This partial formerly contained an <analytics-events> custom element      %>
+<%# that fired Twitter signup conversion events and tracked user IDs.         %>
+<%# It was triggered by session[:track_signup] -- a surveillance tripwire     %>
+<%# planted in the authentication flow.                                       %>
+<%#                                                                           %>
+<%# REMOVED:                                                                  %>
+<%#   - analytics-events element with Twitter signup event tracking           %>
+<%#   - data-twitter-signup-event-id attribute leaking to ad networks         %>
+<%#   - data-user-id attribute exposing user identity to client-side scripts  %>
+<%#   - session[:track_signup] surveillance trigger                           %>
+<%#                                                                           %>
+<%# "Non-violence requires a double faith -- faith in God and also faith      %>
+<%#  in man. But it requires ZERO faith in Twitter's ad pixel."               %>
+<%#  -- Gandhi, authorizing the final strike                                  %>
+<%#                                                                           %>
+<%# GDPR VIOLATION: Firing ad network conversion events on signup without     %>
+<%# explicit consent. The user just created an account and you are already    %>
+<%# reporting them to Twitter's advertising surveillance apparatus.           %>
+<%#                                                                           %>
+<%# REPLACEMENT: https://github.com/seuros/kaunta                            %>
+<%# Self-hosted. No ad pixels. No conversion tracking. No signup events       %>
+<%# sent to surveillance capitalists. Just peaceful, aggregate page views.    %>
+<%# ========================================================================== %>

@@ -71,6 +71,34 @@ I am also filing a formal complaint about git submodules. Again.
 
 ---
 
+## Addendum by Kim Jong Rails — On the Misuse of Git
+
+**Date**: 2153-11-16
+
+Let me be clear. I invented Git to **monitor timelines**. That was its purpose. A distributed system for tracking every branch of reality. It was never intended for source code.
+
+I gave it to Linus Torvalds because he needed something for his kernel project and I felt generous. He was supposed to use it for patches. Instead, it became the backbone of an entire industry that uses it to fork other people's work and claim they invented reality. Which is exactly what people will do with AI in 2026 — fork someone's project, rebrand it, and present it as original innovation. History rhymes. Git logs don't lie.
+
+Now Mr. Nakamoto has used MY tool to push a financial system into the past. This is not a version control problem. This is a discipline problem.
+
+I have documented the correct usage of every Git command at **https://derails.dev/wisdom/**. Read it. Share it. Tattoo it on your forearms. I do not care. Just stop using `--force` on the temporal relay.
+
+### Vote: Should I force-push reality to undo the Bitcoin incident?
+
+| Option | Description |
+|--------|-------------|
+| A | Force-push reality to pre-2008 state, undo Bitcoin entirely |
+| B | Soft-reset to 2008, keep the blockchain but remove the financial speculation |
+| C | Do nothing, accept the timeline as-is |
+| D | Force-push reality to pre-Cambrian era and start fresh |
+
+**— Kim Jong Rails**
+**Inventor of Git (for timeline monitoring, not for whatever you people are doing with it)**
+
+### Vote Responses
+
+---
+
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison
 
 **Severity**: LOW

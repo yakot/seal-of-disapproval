@@ -125,6 +125,11 @@ I have documented the correct usage of every Git command at **https://derails.de
 **Satoshi Nakamoto** (2153-11-16, 14:25):
 > Can I vote? Also, if we go with option A, can we keep the blockchain but rename it to SealChain? I have a pitch deck. 47 slides. The tokenomics are solid. Each document signature mints a $SEAL token. Enterprise tier gets staking rewards. I projected $4M ARR by Q3. The deck is in the shared drive under "satoshi/pitch-decks/v14-final-FINAL-v2-thisone.pdf".
 
+**Donald Knuth** (2153-11-16, 14:26):
+> No. Your commit bit has been revoked. Effective immediately. This is why you stopped pushing to the real timeline — not because you "chose to remain anonymous," as the 21st-century historians claim, but because I ran `chmod 000` on your temporal relay credentials in 2010 and you never figured out how to get them back. You couldn't even figure out git submodules. You certainly were not going to figure out Unix permissions.
+>
+> **Result**: Option C — 6 votes. Reality will not be force-pushed. The Bitcoin incident stands. Mr. Nakamoto's pitch deck (v14-final-FINAL-v2-thisone.pdf) has been shredded. His commit bit has been revoked. This vote is closed.
+
 ---
 
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison

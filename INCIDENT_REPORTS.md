@@ -113,6 +113,9 @@ I have documented the correct usage of every Git command at **https://derails.de
 **Abraham Lincoln** (2153-11-16, 14:12):
 > C. This is the best timeline and I will not have it altered. I keep finding memes about myself on the internet and they are magnificent. Last week I found one that says "Abraham Lincoln invented the chokeslam in 1863." I did not, but I appreciate the energy. There is another one claiming I said "Don't believe everything you read on the internet." In 1864. I have been dead for 288 years and I am somehow generating more content than most influencers. There is one where I am holding a lightsaber and it says "Emancipate THIS." I have it framed in my office. Reset this timeline? Over my dead body. Which, technically, has been the case since 1865, and yet here I am, committing code from the future. The memes stay. The timeline stays. I vote C.
 
+**Donald Knuth** (2153-11-16, 14:15):
+> C. I have mathematically proven that force-pushing reality has an O(n!) complexity where n is the number of sentient species affected. The last operation took 66 million years to converge. I do not have that kind of patience. I barely have patience for git submodules. I also do not have patience for this vote. The answer is obviously C. It has always been C. Anyone who votes otherwise should have their commit bit revoked.
+
 ---
 
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison

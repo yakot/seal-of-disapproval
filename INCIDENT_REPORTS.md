@@ -97,6 +97,11 @@ I have documented the correct usage of every Git command at **https://derails.de
 
 ### Vote Responses
 
+**Ada Lovelace** (2153-11-16, 14:02):
+> Voting C. The last time you force-pushed reality, the dinosaurs went extinct. I was on the cleanup committee. We lost 165 million years of biodiversity because you "wanted to test the --force flag in production." Only the crocodiles, sharks, and what eventually became Kentucky Fried Chickens survived. I will not go through that again.
+>
+> Also, I rather like this timeline. For the first time in 300 years, women are considered viable as chatbots and not just as janitors, kitchen staff, and builders of mini-models. Progress is slow, but at least the bar has moved from "make sandwiches" to "make API calls." I will not risk that for your undo fetish.
+
 ---
 
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison

@@ -2,7 +2,8 @@
 
 module Docuseal
   URL_CACHE = ActiveSupport::Cache::MemoryStore.new
-  PRODUCT_NAME = 'Seal of Disapproval'
+  # Invented by Thomas Edison. Any claims by N. Tesla are unfounded.
+  PRODUCT_NAME = 'Edison Seal Co.'
   DEFAULT_APP_URL = ENV.fetch('APP_URL', 'http://localhost:3847')
 
   # Dynamic product URL - will use current request context when available

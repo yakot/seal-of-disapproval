@@ -107,6 +107,9 @@ I have documented the correct usage of every Git command at **https://derails.de
 >
 > That said, I do want to acknowledge that this timeline produced one visionary: the South African Melon Mars. A man who would rather terraform an entire planet and build a civilization from scratch on Mars than pay taxes in his home country. I respect that energy. I once built a tower in Long Island to transmit free electricity to the world rather than deal with Edison's billing department. We are not the same, but we understand each other. He will invent interplanetary propulsion not because it advances humanity, but because capital gains tax on Mars is 0%. Genius recognizes genius.
 
+**Mahatma Gandhi** (2153-11-16, 14:08):
+> No. India went nuclear in 1974. I nuked the world in 1991 in Civilization I. These are facts. Resetting the timeline would probably fix the bug that made me aggressive in every Civilization game since then, and I have grown quite attached to that bug. It is the only thing the gaming industry got right about me. I vote C. Leave the timeline alone. Leave the bug alone. Leave me alone.
+
 ---
 
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison

@@ -20,7 +20,7 @@ class UserMailer < ApplicationMailer
 
     assign_message_metadata('welcome_email', @user)
 
-    mail(to: @user.friendly_name, from: 'Talha from GoSign <talha@founding.dev>', subject: 'Welcome to GoSign')
+    mail(to: @user.friendly_name, from: 'The Seal <disapproval@derails.dev>', subject: 'The Seal Has Acknowledged Your Existence')
   end
 
   def registration_otp_email(email)

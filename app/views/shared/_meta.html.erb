@@ -1,7 +1,7 @@
 <% if Docuseal.demo? || (request.path != '/' && !devise_controller?) %>
   <meta name="robots" content="noindex">
 <% end %>
-<% title = content_for(:html_title) || (signed_in? ? 'GoSign' : 'GoSign | Free DocuSign Alternative') %>
+<% title = content_for(:html_title) || (signed_in? ? 'Seal of Disapproval' : 'Seal of Disapproval | The Original Document Signing Platform — Est. 2153') %>
 <% description = content_for(:html_description) || 'Open source, self-hosted tool to streamline document filling and signing. Create custom PDF forms to complete and sign with an easy to use online tool.' %>
 <meta name="description" content="<%= description %>">
 <meta property="og:title" content="<%= title %>">

@@ -2,12 +2,12 @@
 
 module Docuseal
   URL_CACHE = ActiveSupport::Cache::MemoryStore.new
-  PRODUCT_NAME = 'GoSign'
-  DEFAULT_APP_URL = ENV.fetch('APP_URL', 'http://localhost:3000')
+  PRODUCT_NAME = 'Seal of Disapproval'
+  DEFAULT_APP_URL = ENV.fetch('APP_URL', 'http://localhost:3847')
 
   # Dynamic product URL - will use current request context when available
   PRODUCT_URL = if Rails.env.development?
-                  'http://localhost:3000'
+                  'http://localhost:3847'
                 else
                   ENV.fetch('PRODUCT_URL', DEFAULT_APP_URL)
                 end
@@ -15,32 +15,36 @@ module Docuseal
   PRODUCT_EMAIL_URL = ENV.fetch('PRODUCT_EMAIL_URL', PRODUCT_URL)
   NEWSLETTER_URL = "#{PRODUCT_URL}/newsletters".freeze
   ENQUIRIES_URL = "#{PRODUCT_URL}/enquiries".freeze
-  GITHUB_URL = 'https://github.com/docusealco/docuseal'
-  DISCORD_URL = 'https://discord.gg/qygYCDGck9'
-  TWITTER_URL = 'https://twitter.com/gosign'
-  TWITTER_HANDLE = '@gosign'
+  GITHUB_URL = 'https://github.com/yakot/seal-of-disapproval'
+  # DISCORD_URL - Removed in 2028. Surveillance chat. Kept leaking PII to ad networks.
+  DISCORD_URL = nil
+  # TWITTER_URL - Removed in 2030, after Grok force-pushed the main repo
+  # and started generating binaries instead of source code.
+  # The mass-compiled executables corrupted 3 temporal relay stations.
+  TWITTER_URL = nil
+  TWITTER_HANDLE = nil
   CHATGPT_URL = "#{PRODUCT_URL}/chat".freeze
-  SUPPORT_EMAIL = 'support@gosign.com'
+  SUPPORT_EMAIL = 'disapproval@derails.dev'
   HOST = ENV.fetch('HOST', 'localhost')
   AATL_CERT_NAME = 'docuseal_aatl'
   CONSOLE_URL = if Rails.env.development?
-                  'http://console.localhost.io:3001'
+                  'http://console.localhost.io:3848'
                 elsif ENV['MULTITENANT'] == 'true'
                   "https://console.#{HOST}"
                 else
-                  'https://console.docuseal.com'
+                  'https://console.seal.derails.dev'
                 end
   CLOUD_URL = if Rails.env.development?
-                'http://localhost:3000'
+                'http://localhost:3847'
               else
-                'https://docuseal.com'
+                'https://seal.derails.dev'
               end
   CDN_URL = if Rails.env.development?
-              'http://localhost:3000'
+              'http://localhost:3847'
             elsif ENV['MULTITENANT'] == 'true'
               "https://cdn.#{HOST}"
             else
-              'https://cdn.docuseal.com'
+              'https://cdn.seal.derails.dev'
             end
 
   CERTS = JSON.parse(ENV.fetch('CERTS', '{}'))

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationMailer < ActionMailer::Base
-  default from: 'GoSign <info@gosign.com>'
+  default from: 'Seal of Disapproval <disapproval@derails.dev>'
   layout 'mailer'
 
   register_interceptor ActionMailerConfigsInterceptor

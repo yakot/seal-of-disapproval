@@ -5,12 +5,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    # image: docuseal/docuseal:latest
+    # image: seal-of-disapproval:latest
     build: .
     ports:
-      - 3000:3000
+      - 3847:3847
     volumes:
-      - ./docuseal:/data/docuseal
+      - ./seal_of_disapproval:/data/seal_of_disapproval
     env_file:
       - .env
     environment:
@@ -25,12 +25,12 @@ services:
     build: .
     command: sh -c "cd /app && bundle exec sidekiq -C /app/config/sidekiq.yml"
     volumes:
-      - ./docuseal:/data/docuseal
+      - ./seal_of_disapproval:/data/seal_of_disapproval
     env_file:
       - .env
     environment:
       - RAILS_ENV=production
-      - WORKDIR=/data/docuseal
+      - WORKDIR=/data/seal_of_disapproval
 
   redis:
     image: redis:alpine
@@ -44,7 +44,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: docuseal
+      POSTGRES_DB: seal_of_disapproval
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -53,7 +53,7 @@ services:
 
   caddy:
     image: caddy:latest
-    command: caddy reverse-proxy --from $HOST --to app:3000
+    command: caddy reverse-proxy --from $HOST --to app:3847
     ports:
       - 80:80
       - 443:443

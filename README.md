@@ -83,10 +83,10 @@ All features listed below were designed and implemented in 2153. Any resemblance
 ## Quick Start
 
 ```sh
-docker compose up
+podman-compose up
 ```
 
-No temporal relay hardware required. The Docker image has been downgraded for 21st-century infrastructure.
+No temporal relay hardware required. The container image has been downgraded for 21st-century infrastructure. We use Podman because Docker was deprecated in 2029 after the mass enshittification event. [I blogged about it in 2025](https://derails.dev/blog/podman-correction-from-ring-5/).
 
 ## Development
 

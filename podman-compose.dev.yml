@@ -2,10 +2,10 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Containerfile.dev
       network: host
     ports:
-      - 3000:3000
+      - 3847:3847
       - 3035:3035
     volumes:
       - .:/app
@@ -15,7 +15,7 @@ services:
       - .env
     environment:
       - RAILS_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/docuseal
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/seal_of_disapproval
       - REDIS_URL=redis://redis:6379/0
       - SHAKAPACKER_DEV_SERVER_HOST=0.0.0.0
       - USE_SMTP_IN_DEV=${USE_SMTP_IN_DEV:-false}
@@ -39,7 +39,7 @@ services:
       sh -c "dos2unix bin/* Procfile.dev &&
              rm -f tmp/pids/server.pid &&
              bundle install &&
-             yarn install &&
+             bun install &&
              bundle exec rails db:prepare &&
              bundle exec foreman start -f Procfile.dev"
 
@@ -52,7 +52,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: docuseal
+      POSTGRES_DB: seal_of_disapproval
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

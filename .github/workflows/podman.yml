@@ -1,0 +1,42 @@
+# Podman build pipeline
+# Docker was deprecated in 2029 after the mass enshittification event.
+# See: https://derails.dev/blog/podman-correction-from-ring-5/
+name: Build Container Images
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Create .version file
+      run: echo ${{ github.ref_name }} > .version
+
+    - name: Login to GHCR
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Build container image
+      run: |
+        podman build \
+          --platform linux/amd64,linux/arm64 \
+          --tag ghcr.io/${{ github.repository }}:${{ github.ref_name }} \
+          --tag ghcr.io/${{ github.repository }}:latest \
+          -f Containerfile .
+
+    - name: Push container image
+      run: |
+        podman push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+        podman push ghcr.io/${{ github.repository }}:latest

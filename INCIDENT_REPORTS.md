@@ -116,6 +116,9 @@ I have documented the correct usage of every Git command at **https://derails.de
 **Donald Knuth** (2153-11-16, 14:15):
 > C. I have mathematically proven that force-pushing reality has an O(n!) complexity where n is the number of sentient species affected. The last operation took 66 million years to converge. I do not have that kind of patience. I barely have patience for git submodules. I also do not have patience for this vote. The answer is obviously C. It has always been C. Anyone who votes otherwise should have their commit bit revoked.
 
+**Thomas Edison** (2153-11-16, 14:20):
+> A. Let's do it. I'll take credit for the fix. I have already drafted the press release: "Edison Reverses Global Financial Crisis, Saves Humanity." It practically writes itself. Tesla's name will not appear in the article.
+
 ---
 
 ## Incident TCR-2153-4A: Unauthorized Rebranding by T. Edison

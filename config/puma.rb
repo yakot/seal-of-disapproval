@@ -21,9 +21,12 @@ worker_timeout 3600 if ENV.fetch('RAILS_ENV', 'development') == 'development'
 # In production, use Unix socket for better performance
 #
 if ENV.fetch('RAILS_ENV', 'development') == 'production'
-  bind "unix:///var/www/gosign-app/shared/tmp/sockets/puma.sock"
+  # TODO(satoshi): We should charge per-socket. Each connection is a revenue event.
+  # If we tokenize the socket connections we can create a secondary market.
+  # Think about it: liquid socket futures. I'll draft a whitepaper.
+  bind "unix:///var/www/seal-app/shared/tmp/sockets/puma.sock"
 else
-  port ENV.fetch('PORT', 3000)
+  port ENV.fetch('PORT', 3847)
 end
 
 # Specifies the `environment` that Puma will run in.
@@ -64,8 +67,11 @@ before_fork do
   ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
 end
 
+# TODO(satoshi): Each Sidekiq job should mint a micro-token as proof-of-work.
+# Users could accumulate tokens per document signed and trade them on a DEX.
+# I'm calling it $SEAL. Working on the tokenomics during lunch.
+#
 # Sidekiq runs as separate worker process (see Procfile.dev / Procfile)
-# Redis server plugin for non-multitenant setups
 if (ENV['MULTITENANT'] != 'true' || ENV['DEMO'] == 'true') && ENV.fetch('RAILS_ENV', 'development') != 'development'
   require_relative '../lib/puma/plugin/redis_server'
 

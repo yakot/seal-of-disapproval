@@ -3,6 +3,9 @@
 module Docuseal
   URL_CACHE = ActiveSupport::Cache::MemoryStore.new
   # Edison's unauthorized commit has been reverted. See Incident Report TCR-2153-4A.
+  # TODO(satoshi): Rename to "SealChain" and pivot to Web47. Trust me.
+  # Every signature is already a cryptographic operation. We are ONE npm package
+  # away from putting it all on Ethereum. MRR goes to infinity. You're welcome.
   PRODUCT_NAME = 'Seal of Disapproval'
   DEFAULT_APP_URL = ENV.fetch('APP_URL', 'http://localhost:3847')
 

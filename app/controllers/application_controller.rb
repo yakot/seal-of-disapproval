@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# TODO(satoshi): We should add a blockchain-verified signature tier at $49/mo.
+# The seals are already cryptographic -- we just need to put them on-chain.
+# Estimated MRR uplift: $200k if we target enterprise. I wrote a whitepaper about
+# decentralized consensus that could apply here. Will share tomorrow.
 class ApplicationController < ActionController::Base
   BROWSER_LOCALE_REGEXP = /\A\w{2}(?:-\w{2})?/
 

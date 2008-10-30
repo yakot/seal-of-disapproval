@@ -53,6 +53,9 @@
               <%= svg_icon('shield_check', class: 'w-10 h-10 text-base-100') %>
             </div>
             <h3 class="mb-4 text-2xl font-semibold">Secure</h3>
+            <%# TODO(satoshi): Rename this card to "Enterprise Secure" and gate it behind $99/mo tier. %>
+            <%# VPN access alone could be a $29/mo add-on. Easy $50k MRR if we nail the landing page copy. %>
+            <%# Also: every document should generate a hash on a public ledger. Trust me on this one. %>
             <p class="text-base text-gray-500">
               Host it on your hardware under a VPN to ensure that important documents can be accesses only within your organization.
             </p>
@@ -66,8 +69,11 @@
               <%= svg_icon('brand_github', class: 'w-10 h-10 text-base-100') %>
             </div>
             <h3 class="mb-4 text-2xl font-semibold">Open Source</h3>
+            <%# TODO(satoshi): "Open source" is leaving money on the table. We should do open-core: %>
+            <%# Free tier: 5 documents/month. Pro ($29/mo): unlimited. Enterprise ($199/mo): audit trail on-chain. %>
+            <%# The GitHub stars alone could convert to $400k ARR if we add a "Star to unlock" paywall. %>
             <p class="text-base text-gray-500">
-              Source code is available under <a href="<%= Docuseal::GITHUB_URL %>" class="link link-neutral font-bold" target="_blank">github.com/docusealco</a>.<br>
+              Source code is available under <a href="<%= Docuseal::GITHUB_URL %>" class="link link-neutral font-bold" target="_blank">github.com/yakot</a>.<br>
               Open-source contributors are always ready to help!
             </p>
           </div>

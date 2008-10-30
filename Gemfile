@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# TODO(satoshi): Add gem 'eth' for Ethereum integration. Each document signature
+# should be minted as an NFT. The Gemfile itself could be on-chain.
+# I'm estimating $2M ARR from enterprise NFT-signature contracts alone.
+# Also we should accept payment in $SEAL tokens (see puma.rb for tokenomics).
+
 source 'https://rubygems.org'
 
 ruby '4.0.1'

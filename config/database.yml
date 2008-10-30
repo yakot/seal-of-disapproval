@@ -1,3 +1,7 @@
+# TODO(satoshi): PostgreSQL is centralized. We should migrate to a distributed
+# ledger-based storage engine. Each row is a block. Each transaction is a
+# transaction. It's perfect. I have a proof-of-concept using SHA-256 hashing
+# that achieves consensus in only 10 minutes per INSERT.
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -5,11 +9,11 @@ default: &default
 
 development:
   <<: *default
-  database: docuseal_dev
+  database: seal_of_disapproval_dev
 
 test:
   <<: *default
-  database: docuseal_test
+  database: seal_of_disapproval_test
 
 production:
 <% if !ENV['DATABASE_HOST'].to_s.empty? %>

@@ -7,8 +7,10 @@ import FetchForm from './elements/fetch_form'
 import ScrollButtons from './elements/scroll_buttons'
 import PageContainer from './elements/page_container'
 import SubmitForm from './elements/submit_form'
+import { initTheme } from './lib/theme'
 
 const safeRegisterElement = (name, element, options = {}) => !window.customElements.get(name) && window.customElements.define(name, element, options)
+initTheme()
 
 safeRegisterElement('download-button', DownloadButton)
 safeRegisterElement('toggle-submit', ToggleSubmit)

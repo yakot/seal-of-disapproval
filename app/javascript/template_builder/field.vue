@@ -269,7 +269,6 @@
         :editable="editable && !defaultField"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowFormulaModal = false"
       />
     </Teleport>
@@ -282,7 +281,6 @@
         :editable="editable && !defaultField"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowFontModal = false"
       />
     </Teleport>
@@ -294,7 +292,6 @@
         :item="field"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowConditionsModal = false"
       />
     </Teleport>
@@ -307,7 +304,6 @@
         :editable="editable && !defaultField"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowDescriptionModal = false"
       />
     </Teleport>
@@ -344,7 +340,7 @@ export default {
     IconMathFunction,
     FieldType
   },
-  inject: ['template', 'backgroundColor', 'selectedAreasRef', 't', 'locale', 'getFieldTypeIndex'],
+  inject: ['template', 'backgroundColor', 'selectedAreasRef', 't', 'locale'],
   props: {
     field: {
       type: Object,
@@ -416,7 +412,7 @@ export default {
       return this.$el.getRootNode().querySelector('#docuseal_modal_container')
     },
     defaultName () {
-      return this.buildDefaultName(this.field)
+      return this.buildDefaultName(this.field, this.template.fields)
     },
     areas () {
       return this.field.areas || []
@@ -436,7 +432,7 @@ export default {
 
       this.$emit('save')
     },
-    buildDefaultName (field) {
+    buildDefaultName (field, fields) {
       if (field.type === 'payment' && field.preferences?.price && !field.preferences?.formula) {
         const { price, currency } = field.preferences || {}
 
@@ -447,7 +443,7 @@ export default {
 
         return `${this.fieldNames[field.type]} ${formattedPrice}`
       } else {
-        const typeIndex = this.getFieldTypeIndex(field)
+        const typeIndex = fields.filter((f) => f.type === field.type).indexOf(field)
 
         if (field.type === 'heading' || field.type === 'strikethrough') {
           return `${this.fieldNames[field.type]} ${typeIndex + 1}`

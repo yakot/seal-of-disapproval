@@ -1,19 +1,25 @@
 # frozen_string_literal: true
 
 class DashboardController < ApplicationController
-  skip_before_action :authenticate_user!, only: %i[index]
-
   before_action :maybe_redirect_product_url
-  before_action :maybe_render_landing
   before_action :maybe_redirect_mfa_setup
 
   skip_authorization_check
 
   def index
-    if cookies.permanent[:dashboard_view] == 'submissions'
-      SubmissionsDashboardController.dispatch(:index, request, response)
+    @waiting_for_others_count = current_account.submissions.active.pending.count
+    @completed_count = current_account.submissions.active.completed.count
+    @expiring_soon_count = current_account.submissions.active.expired.count 
+
+    @recent_submissions = current_account.submissions.active.order(updated_at: :desc).limit(5)
+
+    if current_user.email.present?
+       @tasks = Submitter.joins(:submission)
+                         .where(email: current_user.email, completed_at: nil, declined_at: nil)
+                         .where(submissions: { archived_at: nil })
+                         .limit(5)
     else
-      TemplatesDashboardController.dispatch(:index, request, response)
+       @tasks = []
     end
   end
 
@@ -21,6 +27,9 @@ class DashboardController < ApplicationController
 
   def maybe_redirect_product_url
     return if !Docuseal.multitenant? || signed_in?
+
+    product_uri = URI.parse(Docuseal::PRODUCT_URL)
+    return if request.host == product_uri.host
 
     redirect_to Docuseal::PRODUCT_URL, allow_other_host: true
   end
@@ -34,11 +43,5 @@ class DashboardController < ApplicationController
                                                                              key: AccountConfig::FORCE_MFA)
 
     redirect_to mfa_setup_path, notice: I18n.t('setup_2fa_to_continue')
-  end
-
-  def maybe_render_landing
-    return if signed_in?
-
-    render 'pages/landing'
   end
 end

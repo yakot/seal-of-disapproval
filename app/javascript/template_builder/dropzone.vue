@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex h-60 w-full"
+    class="flex h-[60vh] w-full items-center justify-center"
     @dragover.prevent
     @dragenter="isDragEntering = true"
     @dragleave="isDragEntering = false"
@@ -8,48 +8,58 @@
   >
     <label
       id="document_dropzone"
-      class="w-full relative rounded-md border-2 border-base-content/10 border-dashed"
+      class="w-full max-w-2xl relative rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer bg-white"
+      :class="{
+        'opacity-50': isLoading,
+        'border-gray-300 hover:border-primary hover:bg-blue-50/30': !isDragEntering,
+        'border-primary bg-blue-50/50 scale-[1.02]': isDragEntering
+      }"
       :for="inputId"
-      :class="{ 'opacity-50': isLoading, 'hover:bg-base-200/50': withHoverClass && !isDragEntering, 'bg-base-200/50 border-base-content/30': isDragEntering }"
     >
-      <div class="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center">
-        <div class="flex flex-col items-center pointer-events-none">
+      <div class="p-12 flex flex-col items-center justify-center text-center">
+        <div class="mb-6 rounded-full bg-blue-50 p-4 ring-8 ring-blue-50/50">
           <IconInnerShadowTop
             v-if="isLoading"
-            class="animate-spin"
-            :width="40"
-            :height="40"
+            class="animate-spin text-primary"
+            :width="48"
+            :height="48"
           />
           <component
             :is="icon"
             v-else
-            class="stroke-[1.5px]"
-            :width="40"
-            :height="40"
+            class="stroke-[1.5px] text-primary"
+            :width="48"
+            :height="48"
           />
-          <div
-            v-if="message"
-            class="text-lg mb-1"
-            :class="{ 'mt-1': !withDescription, 'font-medium': withDescription }"
-          >
-            {{ message }}
-          </div>
-          <div
-            v-if="withDescription"
-            class="text-sm"
-          >
-            <span class="font-medium">{{ t('click_to_upload') }}</span> {{ t('or_drag_and_drop_files') }}
-          </div>
-          <button
-            v-if="withGoogleDrive"
-            class="flex items-center text-sm mt-2 pointer-events-auto"
-            @click.stop.prevent="$emit('click-google-drive')"
-          >
-            <span>{{ t('or_add_from') }}</span>
-            <IconBrandGoogleDrive class="w-4 h-4 inline-block ml-1" />
-            <span class="ml-1 font-medium hover:underline">Google Drive</span>
-          </button>
         </div>
+        
+        <div
+          v-if="message"
+          class="text-xl font-semibold text-gray-900 mb-2"
+        >
+          {{ message }}
+        </div>
+        
+        <div
+          v-if="withDescription"
+          class="text-sm text-gray-500 max-w-sm mx-auto"
+        >
+          <span class="font-medium text-primary hover:text-primary/80 hover:underline">{{ t('click_to_upload') }}</span> 
+          {{ t('or_drag_and_drop_files') }}
+        </div>
+        
+        <p class="text-xs text-gray-400 mt-4">
+          Supported formats: PDF, PNG, JPG, DOCX
+        </p>
+
+        <button
+          v-if="withGoogleDrive"
+          class="mt-8 flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors pointer-events-auto"
+          @click.stop.prevent="$emit('click-google-drive')"
+        >
+          <IconBrandGoogleDrive class="w-5 h-5 mr-2" />
+          <span>{{ t('or_add_from') }} Google Drive</span>
+        </button>
       </div>
       <form
         ref="form"
@@ -122,7 +132,7 @@ export default {
     acceptFileTypes: {
       type: String,
       required: false,
-      default: 'image/*, application/pdf, application/zip'
+      default: 'image/*, application/pdf, application/zip, .docx, .doc, .odt, .rtf'
     }
   },
   emits: ['success', 'error', 'loading', 'click-google-drive'],
@@ -146,8 +156,6 @@ export default {
     message () {
       if (this.isLoading) {
         return this.t('uploading')
-      } else if (this.acceptFileTypes === 'image/*, application/pdf, application/zip') {
-        return this.title || this.t('add_pdf_documents_or_images')
       } else {
         return this.title || this.t('add_documents_or_images')
       }
@@ -161,7 +169,7 @@ export default {
   methods: {
     upload: Upload.methods.upload,
     onDropFiles (e) {
-      if (this.acceptFileTypes !== 'image/*, application/pdf, application/zip' || [...e.dataTransfer.files].every((f) => f.type.match(/(?:image\/)|(?:application\/pdf)|(?:application\/zip)/))) {
+      if ([...e.dataTransfer.files].every((f) => f.type.match(/(?:image\/)|(?:application\/pdf)|(?:application\/zip)/) || f.name.match(/\.(?:docx?|xlsx?|odt|rtf)$/i))) {
         this.$refs.input.files = e.dataTransfer.files
 
         this.upload()

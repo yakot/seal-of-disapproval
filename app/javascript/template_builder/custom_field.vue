@@ -125,7 +125,6 @@
         :field="field"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowFormulaModal = false"
       />
     </Teleport>
@@ -137,7 +136,6 @@
         :field="field"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowFontModal = false"
       />
     </Teleport>
@@ -149,7 +147,6 @@
         :field="field"
         :default-field="defaultField"
         :build-default-name="buildDefaultName"
-        @save="$emit('save')"
         @close="isShowDescriptionModal = false"
       />
     </Teleport>

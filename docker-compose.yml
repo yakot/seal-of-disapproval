@@ -3,14 +3,39 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    image: docuseal/docuseal:latest
+      redis:
+        condition: service_started
+    # image: docuseal/docuseal:latest
+    build: .
     ports:
       - 3000:3000
     volumes:
       - ./docuseal:/data/docuseal
+    env_file:
+      - .env
     environment:
       - FORCE_SSL=${HOST}
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/docuseal
+
+  worker:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    build: .
+    command: sh -c "cd /app && bundle exec sidekiq -C /app/config/sidekiq.yml"
+    volumes:
+      - ./docuseal:/data/docuseal
+    env_file:
+      - .env
+    environment:
+      - RAILS_ENV=production
+      - WORKDIR=/data/docuseal
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - ./redis_data:/data
 
   postgres:
     image: postgres:18

@@ -11,13 +11,18 @@ Rails.application.routes.draw do
 
   root 'dashboard#index'
 
+  get 'start' => redirect('/')
+
   get 'up' => 'rails/health#show'
   get 'manifest' => 'pwa#manifest'
 
-  devise_for :users, path: '/', only: %i[sessions passwords],
-                     controllers: { sessions: 'sessions', passwords: 'passwords' }
+  devise_for :users, path: '/', only: %i[sessions passwords omniauth_callbacks],
+                     controllers: { sessions: 'sessions', passwords: 'passwords',
+                                    omniauth_callbacks: 'users/omniauth_callbacks' }
 
   devise_scope :user do
+    get '/auth/failure', to: 'users/omniauth_callbacks#failure'
+
     resource :invitation, only: %i[update] do
       get '' => :edit
     end
@@ -56,7 +61,7 @@ Rails.application.routes.draw do
   resources :account_custom_fields, only: %i[create]
   resources :user_configs, only: %i[create]
   resources :encrypted_user_configs, only: %i[destroy]
-  resources :timestamp_server, only: %i[create] unless Docuseal.multitenant?
+  resources :timestamp_server, only: %i[create]
   resources :dashboard, only: %i[index]
   resources :setup, only: %i[index create]
   resource :newsletter, only: %i[show update]
@@ -75,7 +80,7 @@ Rails.application.routes.draw do
   resources :submitters, only: %i[edit update]
   resources :console_redirect, only: %i[index]
   resources :upgrade, only: %i[index], controller: 'console_redirect'
-  resources :manage, only: %i[index], controller: 'console_redirect'
+  resources :self_host, only: %i[index]
   resource :testing_account, only: %i[show destroy]
   resources :testing_api_settings, only: %i[index]
   resources :submitters_autocomplete, only: %i[index]
@@ -95,7 +100,11 @@ Rails.application.routes.draw do
   resources :templates, only: %i[new create edit update show destroy] do
     resources :clone, only: %i[new create], controller: 'templates_clone'
     resource :debug, only: %i[show], controller: 'templates_debug' if Rails.env.development?
-    resources :documents, only: %i[index create], controller: 'template_documents'
+    resources :documents, only: %i[index create], controller: 'template_documents' do
+      member do
+        get :status
+      end
+    end
     resources :clone_and_replace, only: %i[create], controller: 'templates_clone_and_replace'
     resources :detect_fields, only: %i[create], controller: 'templates_detect_fields' unless Docuseal.multitenant?
     resources :restore, only: %i[create], controller: 'templates_restore'
@@ -116,6 +125,14 @@ Rails.application.routes.draw do
                          controller: 'api/active_storage_blobs_proxy'
   resource :blobs_proxy, only: %i[show], path: '/blobs_proxy/:signed_uuid/*filename',
                          controller: 'api/active_storage_blobs_proxy'
+
+  # Multi-tenant registration routes (controller guards access when not in multitenant mode)
+  resource :attribution_ids, only: %i[create]
+  resource :registration, only: %i[show new create], controller: 'registrations' do
+    get :verify_email
+    post :confirm_email
+    post :resend_code
+  end
 
   if Docuseal.multitenant?
     resource :blobs_proxy_legacy, only: %i[show],
@@ -164,15 +181,11 @@ Rails.application.routes.draw do
   end
 
   scope '/settings', as: :settings do
-    unless Docuseal.multitenant?
-      resources :storage, only: %i[index create], controller: 'storage_settings'
-      resources :search_entries_reindex, only: %i[create]
-      resources :sms, only: %i[index], controller: 'sms_settings'
-    end
-    if Docuseal.demo? || !Docuseal.multitenant?
-      resources :api, only: %i[index create], controller: 'api_settings'
-      resource :reveal_access_token, only: %i[show create], controller: 'reveal_access_token'
-    end
+    resources :storage, only: %i[index create], controller: 'storage_settings'
+    resources :search_entries_reindex, only: %i[create]
+    resources :sms, only: %i[index], controller: 'sms_settings'
+    resources :api, only: %i[index create], controller: 'api_settings'
+    resource :reveal_access_token, only: %i[show create], controller: 'reveal_access_token'
     resources :email, only: %i[index create], controller: 'email_smtp_settings'
     resources :sso, only: %i[index], controller: 'sso_settings'
     resources :notifications, only: %i[index create], controller: 'notifications_settings'
@@ -182,7 +195,10 @@ Rails.application.routes.draw do
                                defaults: { status: :archived }
     resources :integration_users, only: %i[index], path: 'users/:status', controller: 'users',
                                   defaults: { status: :integration }
-    resource :personalization, only: %i[show create], controller: 'personalization_settings'
+    resource :personalization, only: %i[show create], controller: 'personalization_settings' do
+      post :upload_logo
+      delete :delete_logo
+    end
     resources :webhooks, only: %i[index show new create update destroy], controller: 'webhook_settings' do
       post :resend
 
@@ -199,9 +215,21 @@ Rails.application.routes.draw do
         patch :update_app_url
       end
     end
+    resources :billing, only: %i[index] do
+      collection do
+        get :checkout
+        get :portal
+      end
+    end
   end
 
+  # Stripe webhook (outside settings scope, no auth required)
+  post '/webhooks/stripe', to: 'stripe_webhooks#create'
+
   get '/js/:filename', to: 'embed_scripts#show', as: :embed_script
+
+  # Documentation routes
+  get '/docs/api', to: 'docs#api', as: :docs_api
 
   ActiveSupport.run_load_hooks(:routes, self)
 end

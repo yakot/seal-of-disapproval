@@ -1,4 +1,5 @@
 import { target, targetable } from '@github/catalyst/lib/targetable'
+import { isDarkTheme } from '../lib/theme'
 
 let loaderPromise = null
 
@@ -77,6 +78,7 @@ export default targetable(class extends HTMLElement {
     this.input.style.display = 'none'
 
     const { EditorView, minimalSetup, html, htmlflow } = await loadCodeMirror()
+    const darkTheme = isDarkTheme()
 
     this.editorView = new EditorView({
       doc: this.input.value,
@@ -90,8 +92,8 @@ export default targetable(class extends HTMLElement {
         }),
         EditorView.theme({
           '&': {
-            backgroundColor: 'white',
-            color: 'black',
+            backgroundColor: darkTheme ? '#0f172a' : 'white',
+            color: darkTheme ? '#e2e8f0' : 'black',
             fontSize: '14px',
             fontFamily: 'monospace'
           },
@@ -104,6 +106,9 @@ export default targetable(class extends HTMLElement {
           },
           '.cm-gutters': {
             display: 'none'
+          },
+          '.cm-content': {
+            caretColor: darkTheme ? '#e2e8f0' : '#111827'
           }
         })
       ]

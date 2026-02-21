@@ -29,6 +29,30 @@ class ProcessSubmitterCompletionJob
     end
 
     enqueue_completed_webhooks(submitter, is_all_completed:)
+
+    SendDocumentTrackingJob.perform_async(
+      'event_name' => 'document_signed',
+      'submitter_id' => submitter.id,
+      'data' => {
+        'submission_id' => submitter.submission_id,
+        'submitter_id' => submitter.id,
+        'is_all_completed' => is_all_completed
+      }
+    )
+
+    if is_all_completed
+      submission = submitter.submission
+
+      SendDocumentTrackingJob.perform_async(
+        'event_name' => 'document_completed',
+        'submission_id' => submission.id,
+        'data' => {
+          'submission_id' => submission.id,
+          'submitter_count' => submission.submitters.size,
+          'template_name' => submission.template&.name
+        }
+      )
+    end
   end
 
   def create_completed_submitter!(submitter)
@@ -164,13 +188,11 @@ class ProcessSubmitterCompletionJob
     next_submitter_items =
       if submission.template_submitters.any? { |s| s['order'] }
         submitter_groups =
-          submission.template_submitters
-                    .group_by.with_index { |s, index| s['order'] || index }
-                    .sort_by(&:first).pluck(1)
+          submission.template_submitters.group_by.with_index { |s, index| s['order'] || index }
 
-        current_group_index = submitter_groups.index { |group| group.any? { |s| s['uuid'] == submitter.uuid } }
+        current_group_index = submitter_groups.find { |_, group| group.any? { |s| s['uuid'] == submitter.uuid } }&.first
 
-        if current_group_index && submitter_groups[current_group_index + 1] &&
+        if submitter_groups[current_group_index + 1] &&
            submitters_index.values_at(*submitter_groups[current_group_index].pluck('uuid'))
                            .compact.all?(&:completed_at?)
           submitter_groups[current_group_index + 1]

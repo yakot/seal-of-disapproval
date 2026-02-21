@@ -334,6 +334,44 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
 
+  # ==> OmniAuth configuration
+  if ENV['GOOGLE_OAUTH_CLIENT_ID'].present?
+    config.omniauth :google_oauth2,
+                    ENV['GOOGLE_OAUTH_CLIENT_ID'],
+                    ENV['GOOGLE_OAUTH_CLIENT_SECRET'],
+                    scope: 'email,profile',
+                    prompt: 'select_account',
+                    image_aspect_ratio: 'square',
+                    image_size: 200,
+                    access_type: 'offline',
+                    name: 'google_oauth2'
+  end
+
+  if ENV['MICROSOFT_CLIENT_ID'].present?
+    config.omniauth :microsoft_graph,
+                    ENV['MICROSOFT_CLIENT_ID'],
+                    ENV['MICROSOFT_CLIENT_SECRET'],
+                    scope: %w[openid email profile User.Read]
+  end
+
   ActiveSupport.run_load_hooks(:devise_config, config)
 end
 # rubocop:enable Metrics/BlockLength
+
+# Removing sidekiq-scheduler changed gem load order causing configure_warden!
+# to run before Devise mappings are available. Manually configure Warden
+# with the correct failure app, strategies, and session serializers.
+Rails.application.config.after_initialize do
+  warden = Devise.warden_config
+  warden.failure_app = FailureApp
+  warden[:default_strategies][:user] = [:two_factor_authenticatable, :rememberable]
+  warden[:default_scope] = :user
+
+  warden.serialize_into_session(:user) do |record|
+    User.serialize_into_session(record)
+  end
+
+  warden.serialize_from_session(:user) do |args|
+    User.serialize_from_session(*args)
+  end
+end

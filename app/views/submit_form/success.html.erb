@@ -1,17 +1,23 @@
-<div class="max-w-md mx-auto px-2 mt-12 mb-4">
-  <div class="space-y-6 mx-auto">
-    <div class="space-y-6">
-      <div class="flex items-center p-2 mb-4 justify-center">
-        <div class="flex items-center">
-          <div class="mr-3">
-            <%= svg_icon('circle_check', class: 'w-10 h-10 text-green-600') %>
-          </div>
-          <div class="text-2xl">
-            <%= t('completed_successfully') %>
-          </div>
+<div class="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50/50">
+  <div class="w-full max-w-lg">
+    <div class="overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-900/5">
+      <!-- Success Header -->
+      <div class="bg-gradient-to-br from-green-500 to-emerald-600 px-8 py-8 text-center">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm mb-4">
+          <%= svg_icon('circle_check', class: 'w-10 h-10 text-white') %>
+        </div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">
+          <%= t('completed_successfully') %>
+        </h1>
+      </div>
+
+      <!-- Footer -->
+      <div class="border-t border-gray-100 bg-gray-50/50 px-8 py-4">
+        <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
+          <%= svg_icon('shield_check', class: 'w-4 h-4') %>
+          <span>Secured by GoSign</span>
         </div>
       </div>
     </div>
   </div>
 </div>
-<%= render 'shared/attribution', link_path: '/start' %>

@@ -2,18 +2,25 @@
 
 module Docuseal
   URL_CACHE = ActiveSupport::Cache::MemoryStore.new
-  PRODUCT_URL = 'https://www.docuseal.com'
+  PRODUCT_NAME = 'GoSign'
+  DEFAULT_APP_URL = ENV.fetch('APP_URL', 'http://localhost:3000')
+
+  # Dynamic product URL - will use current request context when available
+  PRODUCT_URL = if Rails.env.development?
+                  'http://localhost:3000'
+                else
+                  ENV.fetch('PRODUCT_URL', DEFAULT_APP_URL)
+                end
+
   PRODUCT_EMAIL_URL = ENV.fetch('PRODUCT_EMAIL_URL', PRODUCT_URL)
   NEWSLETTER_URL = "#{PRODUCT_URL}/newsletters".freeze
   ENQUIRIES_URL = "#{PRODUCT_URL}/enquiries".freeze
-  PRODUCT_NAME = 'DocuSeal'
-  DEFAULT_APP_URL = ENV.fetch('APP_URL', 'http://localhost:3000')
   GITHUB_URL = 'https://github.com/docusealco/docuseal'
   DISCORD_URL = 'https://discord.gg/qygYCDGck9'
-  TWITTER_URL = 'https://twitter.com/docusealco'
-  TWITTER_HANDLE = '@docusealco'
+  TWITTER_URL = 'https://twitter.com/gosign'
+  TWITTER_HANDLE = '@gosign'
   CHATGPT_URL = "#{PRODUCT_URL}/chat".freeze
-  SUPPORT_EMAIL = 'support@docuseal.com'
+  SUPPORT_EMAIL = 'support@gosign.com'
   HOST = ENV.fetch('HOST', 'localhost')
   AATL_CERT_NAME = 'docuseal_aatl'
   CONSOLE_URL = if Rails.env.development?
@@ -62,7 +69,7 @@ module Docuseal
   end
 
   def advanced_formats?
-    multitenant?
+    true
   end
 
   def demo?
@@ -122,5 +129,13 @@ module Docuseal
 
   def refresh_default_url_options!
     @default_url_options = nil
+  end
+
+  def restricted_features
+    ENV.fetch('RESTRICTED_FEATURES', '').split(',').map(&:strip).map(&:downcase)
+  end
+
+  def feature_restricted?(feature)
+    restricted_features.include?(feature.to_s.downcase)
   end
 end

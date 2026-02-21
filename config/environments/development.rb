@@ -50,13 +50,33 @@ Rails.application.configure do
   config.active_job.queue_adapter = :sidekiq
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :disk
+  # config.active_storage.service = :disk
+  config.active_storage.service =
+  if ENV['S3_ATTACHMENTS_BUCKET'].present?
+    :aws_s3
+  else
+    :disk
+  end
+
   config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :letter_opener_web
+
+  if ENV['SMTP_ADDRESS']
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: ENV.fetch('SMTP_ADDRESS', nil),
+      port: ENV.fetch('SMTP_PORT', 587),
+      domain: ENV.fetch('SMTP_DOMAIN', nil),
+      user_name: ENV.fetch('SMTP_USERNAME', nil),
+      password: ENV.fetch('SMTP_PASSWORD', nil),
+      authentication: ENV.fetch('SMTP_PASSWORD', nil).present? ? ENV.fetch('SMTP_AUTHENTICATION', 'plain') : nil,
+      enable_starttls: ENV['SMTP_ENABLE_STARTTLS'] != 'false'
+    }.compact
+  end
 
   config.action_mailer.perform_caching = false
 

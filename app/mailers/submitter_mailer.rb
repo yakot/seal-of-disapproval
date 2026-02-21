@@ -48,6 +48,35 @@ class SubmitterMailer < ApplicationMailer
     end
   end
 
+  def reminder_email(submitter)
+    @current_account = submitter.submission.account
+    @submitter = submitter
+
+    template_preferences = @submitter.template&.preferences || {}
+
+    @body = template_preferences['invitation_reminder_email_body'].presence
+
+    @subject = template_preferences['invitation_reminder_email_subject'].presence
+
+    @email_config = AccountConfigs.find_for_account(@current_account, AccountConfig::SUBMITTER_INVITATION_REMINDER_EMAIL_KEY)
+    @body ||= fetch_config_email_body(@email_config, @submitter)
+
+    assign_message_metadata('submitter_reminder', @submitter)
+
+    reply_to = build_submitter_reply_to(@submitter)
+
+    I18n.with_locale(@current_account.locale) do
+      subject = build_invite_subject(@subject, @email_config, submitter)
+
+      mail(
+        to: @submitter.friendly_name,
+        from: from_address_for_submitter(submitter),
+        subject:,
+        reply_to:
+      )
+    end
+  end
+
   def completed_email(submitter, user, to: nil)
     @current_account = submitter.submission.account
     @submitter = submitter

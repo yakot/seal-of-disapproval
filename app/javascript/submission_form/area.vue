@@ -3,7 +3,7 @@
     class="flex absolute lg:text-base -outline-offset-1 field-area"
     dir="auto"
     :style="[computedStyle, fontStyle]"
-    :class="{ 'cursor-default': !submittable, 'border border-red-100 bg-red-100 cursor-pointer': submittable, 'border border-red-100': !isActive && submittable, 'bg-opacity-80': !isActive && !isValueSet && submittable, 'outline-red-500 outline-dashed outline-2 z-10 field-area-active': isActive && submittable, 'bg-opacity-40': (isActive || isValueSet) && submittable }"
+    :class="{ 'cursor-default': !submittable, 'border border-accent/40 bg-accent/10 cursor-pointer': submittable, 'border border-accent/40': !isActive && submittable, 'bg-opacity-80': !isActive && !isValueSet && submittable, 'outline-primary outline-dashed outline-2 z-10 field-area-active': isActive && submittable, 'bg-opacity-40': (isActive || isValueSet) && submittable }"
   >
     <div
       v-if="(!withFieldPlaceholder || !field.name || field.type === 'cells') && !isActive && !isValueSet && field.type !== 'checkbox' && submittable && !area.option_uuid"
@@ -182,8 +182,8 @@
     </div>
     <div
       v-else-if="field.type === 'cells'"
-      class="w-full flex"
-      :class="{ 'justify-end': field.preferences?.align === 'right', ...alignClasses, ...fontClasses }"
+      class="w-full flex items-center"
+      :class="{ 'justify-end': field.preferences?.align === 'right', ...fontClasses }"
     >
       <div
         v-for="(char, index) in modelValue"
@@ -239,7 +239,7 @@
             y1="50%"
             x2="100%"
             y2="50%"
-            :stroke="field.preferences?.color || 'red'"
+            :stroke="field.preferences?.color || 'black'"
             :stroke-width="strikethroughWidth"
           />
         </svg>
@@ -253,7 +253,7 @@
             y1="0"
             x2="100%"
             y2="100%"
-            :stroke="field.preferences?.color || 'red'"
+            :stroke="field.preferences?.color || 'black'"
             :stroke-width="strikethroughWidth"
           />
           <line
@@ -261,7 +261,7 @@
             y1="0"
             x2="0"
             y2="100%"
-            :stroke="field.preferences?.color || 'red'"
+            :stroke="field.preferences?.color || 'black'"
             :stroke-width="strikethroughWidth"
           />
         </svg>

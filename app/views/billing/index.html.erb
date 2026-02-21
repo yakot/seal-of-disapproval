@@ -1,0 +1,123 @@
+<% if params[:success] && @subscription %>
+  <analytics-events
+    data-subscription-active="true"
+    data-plan-value="<%= @subscription.items.data.first.price.unit_amount / 100.0 rescue 0 %>"
+    data-transaction-id="<%= @subscription.latest_invoice rescue '' %>"
+    data-currency="<%= @subscription.items.data.first.price.currency&.upcase rescue 'USD' %>"
+    data-twitter-event-id="<%= ENV['TWITTER_PURCHASE_EVENT_ID'] %>"
+  ></analytics-events>
+<% end %>
+<div class="flex flex-wrap md:flex-nowrap h-full bg-base-200/50">
+  <%= render 'shared/settings_nav' %>
+  
+  <div class="flex-grow p-6 md:p-10 overflow-y-auto">
+    <div class="max-w-5xl mx-auto space-y-8">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-base-content"><%= t('billing') %></h1>
+          <p class="text-base-content/60 mt-1"><%= t('manage_your_subscription_and_billing_information') %></p>
+        </div>
+      </div>
+
+      <% if params[:success] %>
+        <div class="alert alert-success shadow-sm">
+          <%= svg_icon('circle_check', class: 'w-6 h-6 stroke-current') %>
+          <span><%= t('subscription_successful') %></span>
+        </div>
+      <% end %>
+
+      <% if params[:canceled] %>
+        <div class="alert alert-warning shadow-sm">
+          <%= svg_icon('exclamation_circle', class: 'w-6 h-6 stroke-current') %>
+          <span><%= t('checkout_canceled') %></span>
+        </div>
+      <% end %>
+
+      <!-- Current Plan Card -->
+      <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-6">
+          <h2 class="card-title text-lg font-bold mb-4 border-b border-base-200 pb-2"><%= t('current_plan') %></h2>
+          
+          <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <%= svg_icon('credit_card', class: 'w-6 h-6') %>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-base-content/60"><%= t('your_current_plan_is') %></p>
+                <p class="text-xl font-bold text-base-content">
+                  <% if @subscription %>
+                    <%= @subscription.items.data.first.price.product.name rescue t('subscription') %>
+                  <% else %>
+                    <%= t('no_active_plan') %>
+                  <% end %>
+                </p>
+              </div>
+            </div>
+            
+            <% if @subscription %>
+              <%= link_to t('manage_subscription'), portal_settings_billing_index_path, class: 'btn btn-primary' %>
+            <% else %>
+              <%= link_to t('upgrade_plan'), checkout_settings_billing_index_path, class: 'btn btn-primary', data: { turbo: false } %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invoices Section -->
+      <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-6">
+          <h2 class="card-title text-lg font-bold mb-4 border-b border-base-200 pb-2"><%= t('invoices') %></h2>
+          
+          <% if @invoices&.any? %>
+            <div class="overflow-x-auto">
+              <table class="table w-full">
+                <thead>
+                  <tr class="bg-base-200/50">
+                    <th><%= t('invoice_id') %></th>
+                    <th><%= t('value') %></th>
+                    <th><%= t('date_header') %></th>
+                    <th><%= t('status') %></th>
+                    <th class="text-right"><%= t('actions') %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @invoices.each do |invoice| %>
+                    <tr class="hover">
+                      <td class="font-mono text-xs"><%= invoice.number || invoice.id.last(14) %></td>
+                      <td class="font-medium">$<%= format('%.2f', invoice.amount_paid / 100.0) %></td>
+                      <td><%= Time.at(invoice.created).strftime('%b %d, %Y') %></td>
+                      <td>
+                        <% status_color = invoice.status == 'paid' ? 'success' : (invoice.status == 'open' ? 'warning' : 'error') %>
+                        <div class="badge badge-<%= status_color %> badge-sm gap-1">
+                          <%= invoice.status == 'paid' ? t('paid') : invoice.status.humanize %>
+                        </div>
+                      </td>
+                      <td class="text-right">
+                        <% if invoice.hosted_invoice_url %>
+                          <%= link_to invoice.hosted_invoice_url, target: '_blank', class: 'btn btn-ghost btn-xs' do %>
+                            <%= svg_icon('external_link', class: 'w-4 h-4') %>
+                            <%= t('view') %>
+                          <% end %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="text-center py-10 bg-base-200/30 rounded-lg border border-dashed border-base-300">
+              <div class="w-12 h-12 mx-auto rounded-full bg-base-200 flex items-center justify-center text-base-content/40 mb-3">
+                <%= svg_icon('file_text', class: 'w-6 h-6') %>
+              </div>
+              <p class="text-base-content/60 font-medium"><%= t('no_invoices_yet') %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

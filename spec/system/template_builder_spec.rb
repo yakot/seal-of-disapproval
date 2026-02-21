@@ -21,7 +21,7 @@ RSpec.describe 'Template Builder' do
       expect do
         doc.find('.replace-document-button').click
         doc.find('.replace-document-button input[type="file"]', visible: false)
-           .attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+           .attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
 
         page.driver.wait_for_network_idle
       end.to change { template.documents.count }.by(1)

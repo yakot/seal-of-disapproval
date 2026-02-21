@@ -1,7 +1,15 @@
 <template>
   <div>
     <div class="relative">
+      <div
+        v-if="!previewImage"
+        class="rounded border bg-base-200 flex items-center justify-center"
+        :style="{ width: '100%', aspectRatio: '1400 / 1812' }"
+      >
+        <span class="loading loading-spinner loading-md opacity-50" />
+      </div>
       <img
+        v-else
         :src="previewImage.url"
         :width="previewImage.metadata.width"
         :height="previewImage.metadata.height"
@@ -119,7 +127,6 @@
       <ConditionsModal
         :item="item"
         :build-default-name="buildDefaultName"
-        @save="$emit('change')"
         @close="isShowConditionsModal = false"
       />
     </Teleport>
@@ -146,7 +153,7 @@ export default {
     GoogleDriveDocumentSettings,
     IconSortDescending2
   },
-  inject: ['t', 'getFieldTypeIndex'],
+  inject: ['t'],
   props: {
     item: {
       type: Object,
@@ -168,7 +175,7 @@ export default {
     acceptFileTypes: {
       type: String,
       required: false,
-      default: 'image/*, application/pdf, application/zip'
+      default: 'image/*, application/pdf, application/zip, .docx, .doc, .odt, .rtf'
     },
     withReplaceButton: {
       type: Boolean,

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class NotificationsSettingsController < ApplicationController
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to settings_billing_index_path, alert: I18n.t('subscription_required_for_notifications')
+  end
+
+  before_action :authorize_feature_access
   before_action :load_bcc_config, only: :index
   before_action :load_reminder_config, only: :index
   authorize_resource :bcc_config, only: :index
@@ -42,5 +47,9 @@ class NotificationsSettingsController < ApplicationController
     params.require(:account_config).permit(:key, :value, { value: {} }, { value: [] }).tap do |attrs|
       attrs[:key] = nil unless attrs[:key].in?([AccountConfig::BCC_EMAILS, AccountConfig::SUBMITTER_REMINDERS])
     end
+  end
+
+  def authorize_feature_access
+    authorize!(:access, :settings_notifications)
   end
 end

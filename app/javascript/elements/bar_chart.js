@@ -1,3 +1,5 @@
+import { isDarkTheme } from '../lib/theme'
+
 export default class extends HTMLElement {
   connectedCallback () {
     this.chartLabels = JSON.parse(this.dataset.labels || '[]')
@@ -15,6 +17,9 @@ export default class extends HTMLElement {
 
   async initChart () {
     const { default: Chart } = await import(/* webpackChunkName: "chartjs" */ 'chart.js/auto')
+    const darkTheme = isDarkTheme()
+    const axisColor = darkTheme ? '#94a3b8' : '#64748b'
+    const gridColor = darkTheme ? 'rgba(148, 163, 184, 0.2)' : 'rgba(100, 116, 139, 0.2)'
 
     const canvas = this.querySelector('canvas')
 
@@ -34,8 +39,20 @@ export default class extends HTMLElement {
           y: {
             beginAtZero: true,
             grace: '20%',
+            grid: {
+              color: gridColor
+            },
             ticks: {
-              precision: 0
+              precision: 0,
+              color: axisColor
+            }
+          },
+          x: {
+            grid: {
+              color: gridColor
+            },
+            ticks: {
+              color: axisColor
             }
           }
         },

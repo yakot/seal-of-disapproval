@@ -52,24 +52,28 @@
       </div>
     </div>
     <div
-      v-if="$slots.buttons || withTitle"
+      v-if="$slots.buttons || withTitle || editable"
       id="title_container"
-      class="flex justify-between py-1.5 items-center pr-4 top-0 z-10 title-container"
+      class="flex justify-between py-3 px-6 items-center border-b border-gray-200 bg-white z-10 title-container shadow-sm"
       :class="{ sticky: withStickySubmitters || isBreakpointLg }"
-      :style="{ backgroundColor }"
     >
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-4">
         <a
           v-if="withLogo"
           href="/"
+          class="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
         >
-          <Logo />
+          <div class="bg-primary/10 p-1.5 rounded-lg">
+             <Logo class="w-6 h-6 text-primary" />
+          </div>
+          <span class="font-bold text-lg tracking-tight text-gray-900">GoSign</span>
         </a>
+        <div class="h-6 w-px bg-gray-200 mx-2"></div>
         <Contenteditable
           v-if="withTitle"
           :model-value="template.name"
           :editable="editable"
-          class="text-xl md:text-3xl font-semibold focus:text-clip template-name"
+          class="text-lg font-medium text-gray-900 focus:text-gray-900 focus:bg-gray-50 rounded px-2 py-1 transition-colors template-name"
           :icon-stroke-width="2.3"
           @update:model-value="updateName"
         />
@@ -108,12 +112,12 @@
               autocomplete="off"
             >
             <button
-              class="btn btn-primary btn-ghost text-base hidden md:flex"
+              class="btn btn-outline btn-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium hidden md:flex"
               type="submit"
             >
               <IconWritingSign
-                width="22"
-                class="inline"
+                width="18"
+                class="inline mr-1.5"
               />
               <span class="hidden md:inline">
                 {{ t('sign_yourself') }}
@@ -124,13 +128,13 @@
             v-else-if="withSignYourselfButton"
             id="sign_yourself_button"
             :href="`/templates/${template.id}/submissions/new?selfsign=true`"
-            class="btn btn-primary btn-ghost text-base hidden md:flex"
+            class="btn btn-outline btn-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium hidden md:flex"
             data-turbo-frame="modal"
             @click="maybeShowErrorTemplateAlert"
           >
             <IconWritingSign
-              width="22"
-              class="inline"
+              width="18"
+              class="inline mr-1.5"
             />
             <span class="hidden md:inline">
               {{ t('sign_yourself') }}
@@ -141,12 +145,12 @@
             id="send_button"
             :href="`/templates/${template.id}/submissions/new?with_link=true`"
             data-turbo-frame="modal"
-            class="white-button md:!px-6"
+            class="btn btn-primary btn-sm font-semibold shadow-sm hover:shadow text-white border-transparent"
             @click="maybeShowErrorTemplateAlert"
           >
             <IconUsersPlus
-              width="20"
-              class="inline"
+              width="18"
+              class="inline mr-1.5"
             />
             <span class="hidden md:inline">
               {{ t('send') }}
@@ -155,22 +159,23 @@
           <span
             v-if="editable"
             id="save_button_container"
-            class="flex"
+            class="flex shadow-sm rounded-md isolate"
           >
             <button
-              class="base-button !rounded-r-none !pr-2"
+              class="btn btn-sm bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium rounded-r-none pr-2"
               :class="{ disabled: isSaving }"
               v-bind="isSaving ? { disabled: true } : {}"
               @click.prevent="onSaveClick"
             >
               <IconInnerShadowTop
                 v-if="isSaving"
-                width="22"
-                class="animate-spin"
+                width="18"
+                class="animate-spin mr-1.5"
               />
               <IconDeviceFloppy
                 v-else
-                width="22"
+                width="18"
+                class="mr-1.5"
               />
               <span class="hidden md:inline">
                 {{ t('save') }}
@@ -182,10 +187,10 @@
             >
               <label
                 tabindex="0"
-                class="base-button !rounded-l-none !pl-1 !pr-2 !border-l-neutral-500"
+                class="btn btn-sm bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium rounded-l-none pl-1 pr-2 border-l-0"
               >
                 <span class="text-sm align-text-top">
-                  <IconChevronDown class="w-5 h-5 flex-shrink-0" />
+                  <IconChevronDown class="w-4 h-4 flex-shrink-0" />
                 </span>
               </label>
               <ul
@@ -255,7 +260,7 @@
     <div
       id="main_container"
       class="flex main-container"
-      :class="$slots.buttons || withTitle ? (isMobile ? 'max-h-[calc(100%_-_60px)]' : 'md:max-h-[calc(100%_-_60px)]') : (isMobile ? 'max-h-[100%]' : 'md:max-h-[100%]')"
+      :class="($slots.buttons || withTitle || editable) ? (isMobile ? 'max-h-[calc(100%_-_60px)]' : 'md:max-h-[calc(100%_-_60px)]') : (isMobile ? 'max-h-[100%]' : 'md:max-h-[100%]')"
     >
       <div
         v-if="withDocumentsList"
@@ -374,7 +379,6 @@
                 :draw-field-type="drawFieldType"
                 :draw-custom-field="drawCustomField"
                 :editable="editable"
-                :is-mobile="isMobile"
                 :base-url="baseUrl"
                 :with-fields-detection="withFieldsDetection"
                 @draw="[onDraw($event), withSelectedFieldType ? '' : drawFieldType = '', drawCustomField = null, showDrawField = false]"
@@ -383,9 +387,9 @@
                 @paste-field="pasteField"
                 @copy-field="copyField"
                 @add-custom-field="addCustomField"
-                @set-draw="[drawField = $event.field, drawOption = $event.option]"
                 @copy-selected-areas="copySelectedAreas"
                 @delete-selected-areas="deleteSelectedAreas"
+                @align-selected-areas="alignSelectedAreas"
                 @autodetect-fields="detectFieldsForPage"
               />
               <DocumentControls
@@ -439,7 +443,7 @@
       <div
         v-if="withFieldsList && !isMobile"
         id="fields_list_container"
-        class="relative w-80 flex-none mt-1 pr-4 pl-0.5 hidden md:block fields-list-container"
+        class="relative w-80 flex-none mt-1 pr-4 pl-0.5 pb-16 hidden md:block fields-list-container"
         :class="drawField || drawCustomField ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'"
       >
         <div
@@ -646,8 +650,7 @@ export default {
       fieldsDragFieldRef: computed(() => this.fieldsDragFieldRef),
       customDragFieldRef: computed(() => this.customDragFieldRef),
       isSelectModeRef: computed(() => this.isSelectModeRef),
-      isCmdKeyRef: computed(() => this.isCmdKeyRef),
-      getFieldTypeIndex: this.getFieldTypeIndex
+      isCmdKeyRef: computed(() => this.isCmdKeyRef)
     }
   },
   props: {
@@ -778,7 +781,7 @@ export default {
     acceptFileTypes: {
       type: String,
       required: false,
-      default: 'image/*, application/pdf, application/zip'
+      default: 'image/*, application/pdf, application/zip, .docx, .doc, .odt, .rtf'
     },
     baseUrl: {
       type: String,
@@ -991,18 +994,6 @@ export default {
 
       return areas
     },
-    fieldTypeIndexMap () {
-      const map = {}
-      const typeCounters = {}
-
-      this.template.fields.forEach((f) => {
-        typeCounters[f.type] ||= 0
-        map[f.uuid] = typeCounters[f.type]
-        typeCounters[f.type]++
-      })
-
-      return map
-    },
     isAllRequiredFieldsAdded () {
       return !this.defaultRequiredFields?.some((f) => {
         return !this.template.fields?.some((field) => field.name === f.name)
@@ -1083,8 +1074,14 @@ export default {
         this.pendingFieldAttachmentUuids.push(item.attachment_uuid)
       }
     })
+
+    this.pollConvertingDocuments()
   },
   unmounted () {
+    if (this._convertPollTimer) {
+      clearTimeout(this._convertPollTimer)
+    }
+
     document.removeEventListener('keyup', this.onKeyUp)
     window.removeEventListener('keydown', this.onKeyDown)
 
@@ -1098,9 +1095,6 @@ export default {
     toRaw,
     addCustomField (field) {
       return this.$refs.fields.addCustomField(field)
-    },
-    getFieldTypeIndex (field) {
-      return this.fieldTypeIndexMap[field.uuid]
     },
     addCustomFieldWithoutDraw () {
       const customField = this.drawCustomField
@@ -1176,6 +1170,27 @@ export default {
       })
 
       this.debouncedSave()
+    },
+    alignSelectedAreas (direction) {
+      const areas = this.selectedAreasRef.value
+
+      let targetValue
+
+      if (direction === 'left') {
+        targetValue = Math.min(...areas.map(a => a.x))
+        areas.forEach((area) => { area.x = targetValue })
+      } else if (direction === 'right') {
+        targetValue = Math.max(...areas.map(a => a.x + a.w))
+        areas.forEach((area) => { area.x = targetValue - area.w })
+      } else if (direction === 'top') {
+        targetValue = Math.min(...areas.map(a => a.y))
+        areas.forEach((area) => { area.y = targetValue })
+      } else if (direction === 'bottom') {
+        targetValue = Math.max(...areas.map(a => a.y + a.h))
+        areas.forEach((area) => { area.y = targetValue - area.h })
+      }
+
+      this.save()
     },
     download () {
       this.isDownloading = true
@@ -1549,7 +1564,9 @@ export default {
     scrollIntoDocument (item) {
       const ref = this.documentRefs.find((e) => e.document.uuid === item.attachment_uuid)
 
-      ref.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      if (!ref?.$el) return
+
+      ref.$el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     },
     clearDrawField () {
       this.drawField = null
@@ -2061,9 +2078,7 @@ export default {
         }
 
         if (type === 'checkbox' && !this.drawFieldType && (this.template.fields[this.template.fields.length - 1]?.type === 'checkbox' || area.w)) {
-          const previousField = this.template.fields.findLast
-            ? this.template.fields.findLast((f) => f.type === type)
-            : [...this.template.fields].reverse().find((f) => f.type === type)
+          const previousField = [...this.template.fields].reverse().find((f) => f.type === type)
           const previousArea = previousField?.areas?.[previousField.areas.length - 1]
 
           if (previousArea || area.w) {
@@ -2327,9 +2342,7 @@ export default {
     assignDropAreaSize (fieldArea, field, area) {
       const fieldType = field.type || 'text'
 
-      const previousField = this.template.fields.findLast
-        ? this.template.fields.findLast((f) => f.type === fieldType)
-        : [...this.template.fields].reverse().find((f) => f.type === fieldType)
+      const previousField = [...this.template.fields].reverse().find((f) => f.type === fieldType)
 
       let baseArea
 
@@ -2430,6 +2443,8 @@ export default {
       if (error) alert(error)
     },
     updateFromUpload (data) {
+      const hadDocumentsBeforeUpload = this.template.schema.length > 0
+
       this.template.schema.push(...data.schema)
       this.template.documents.push(...data.documents)
 
@@ -2450,7 +2465,10 @@ export default {
           this.$refs.previews.scrollTop = this.$refs.previews.scrollHeight
         }
 
-        this.scrollIntoDocument(data.schema[0])
+        // Avoid jumping the viewport on the first upload; it makes the top action bar appear to disappear.
+        if (hadDocumentsBeforeUpload && data.schema?.[0]) {
+          this.scrollIntoDocument(data.schema[0])
+        }
       })
 
       if (this.template.name === 'New Document') {
@@ -2474,6 +2492,35 @@ export default {
           })
         }
       })
+
+      this.pollConvertingDocuments()
+    },
+    pollConvertingDocuments () {
+      const convertingDocs = this.template.documents.filter((doc) => {
+        return !doc.metadata?.pdf?.number_of_pages && !doc.preview_images?.length
+      })
+
+      if (!convertingDocs.length) return
+
+      this._convertPollTimer = setTimeout(() => {
+        this.baseFetch(`/templates/${this.template.id}/documents/${convertingDocs[0].uuid}/status`, {
+          headers: { Accept: 'application/json' }
+        }).then((resp) => {
+          if (resp.ok) {
+            resp.json().then((data) => {
+              if (data.metadata?.pdf?.number_of_pages) {
+                window.location.reload()
+              } else {
+                this.pollConvertingDocuments()
+              }
+            })
+          } else {
+            this.pollConvertingDocuments()
+          }
+        }).catch(() => {
+          this.pollConvertingDocuments()
+        })
+      }, 3000)
     },
     updateName (value) {
       this.template.name = value

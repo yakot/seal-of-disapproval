@@ -195,7 +195,7 @@ export default {
     acceptFileTypes: {
       type: String,
       required: false,
-      default: 'image/*, application/pdf, application/zip'
+      default: 'image/*, application/pdf, application/zip, .docx, .doc, .odt, .rtf'
     }
   },
   emits: ['success', 'error'],
@@ -290,11 +290,7 @@ export default {
         if (resp.ok) {
           resp.json().then((data) => {
             this.$emit('success', data)
-
-            if (this.$refs.input) {
-              this.$refs.input.value = ''
-            }
-
+            this.$refs.input.value = ''
             this.isLoading = false
           })
         } else if (resp.status === 422) {

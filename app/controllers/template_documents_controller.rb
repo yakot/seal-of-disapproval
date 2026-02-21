@@ -2,6 +2,7 @@
 
 class TemplateDocumentsController < ApplicationController
   load_and_authorize_resource :template
+  skip_authorize_resource only: :status
 
   FILES_TTL = 5.minutes
 
@@ -35,5 +36,20 @@ class TemplateDocumentsController < ApplicationController
     }
   rescue Templates::CreateAttachments::PdfEncrypted
     render json: { error: 'PDF encrypted', status: 'pdf_encrypted' }, status: :unprocessable_content
+  end
+
+  def status
+    authorize! :read, @template
+
+    document = @template.documents.find_by(uuid: params[:id])
+
+    return head :not_found unless document
+
+    render json: document.as_json(
+      methods: %i[metadata signed_uuid],
+      include: {
+        preview_images: { methods: %i[url metadata filename] }
+      }
+    )
   end
 end

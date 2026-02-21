@@ -106,7 +106,31 @@ module Templates
         return handle_pdf_or_image(template, file, file.read, params, extract_fields:)
       end
 
+      if DOCUMENT_CONTENT_TYPES.include?(file.content_type)
+        return handle_document(template, file, params, extract_fields:)
+      end
+
       raise InvalidFileType, file.content_type
+    end
+
+    def handle_document(template, file, params, extract_fields:)
+      document_data = file.read
+
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: StringIO.new(document_data),
+        filename: file.original_filename,
+        content_type: file.content_type
+      )
+
+      document = template.documents.create!(blob:)
+
+      ConvertDocumentJob.perform_async(
+        'template_id' => template.id,
+        'attachment_id' => document.id,
+        'extract_fields' => extract_fields
+      )
+
+      document
     end
   end
 end

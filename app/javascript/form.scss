@@ -3,6 +3,7 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import "./theme_overrides";
 
 a[href],
 input[type='checkbox'],
@@ -44,7 +45,7 @@ button[disabled] .enabled, button.btn-disabled .enabled {
 }
 
 .base-textarea {
-  @apply textarea textarea-bordered bg-white rounded-3xl;
+  @apply textarea textarea-bordered bg-base-100 rounded-3xl;
 }
 
 .btn {
@@ -52,23 +53,23 @@ button[disabled] .enabled, button.btn-disabled .enabled {
 }
 
 .base-input {
-  @apply input input-bordered bg-white;
+  @apply input input-bordered bg-base-100;
 }
 
 .base-button {
-  @apply btn btn-neutral text-white text-base;
+  @apply btn btn-primary text-white text-base;
 }
 
 .white-button {
-  @apply btn btn-outline text-base bg-white border-2;
+  @apply btn btn-outline text-base bg-base-100 border-2 border-base-content/20;
 }
 
 .base-checkbox {
-  @apply checkbox rounded bg-white checkbox-sm;
+  @apply checkbox rounded bg-base-100 checkbox-sm;
 }
 
 .base-radio {
-  @apply radio bg-white radio-sm;
+  @apply radio bg-base-100 radio-sm;
 }
 
 .font-times {
@@ -77,4 +78,64 @@ button[disabled] .enabled, button.btn-disabled .enabled {
 
 .font-courier {
   font-family: "Courier New", Consolas, "Liberation Mono", monospace, ui-monospace, SFMono-Regular, Menlo, Monaco;
+}
+
+.complete-action-button {
+  @apply min-h-11 tracking-wide;
+}
+
+[data-theme='docuseal_dark'] .complete-action-button {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.45) !important;
+}
+
+[data-theme='docuseal_dark'] .complete-action-button:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+[data-theme='docuseal_dark'] .complete-action-button[disabled] {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+  opacity: 0.75 !important;
+}
+
+[data-theme='docuseal_dark'] #signing_form_header .btn-outline {
+  border-color: #64748b !important;
+  color: #e2e8f0 !important;
+  background-color: #0f172a !important;
+}
+
+[data-theme='docuseal_dark'] #signing_form_header .btn-outline:hover {
+  background-color: #1e293b !important;
+}
+
+[data-theme='docuseal_dark'] #form_container .btn-outline,
+[data-theme='docuseal_dark'] .set-current-date-button {
+  border-color: #64748b !important;
+  color: #e2e8f0 !important;
+  background-color: #111827 !important;
+}
+
+[data-theme='docuseal_dark'] #form_container .btn-outline:hover,
+[data-theme='docuseal_dark'] .set-current-date-button:hover {
+  background-color: #1f2937 !important;
+  border-color: #93a4b8 !important;
+}
+
+[data-theme='docuseal_dark'] #complete_form_button,
+[data-theme='docuseal_dark'] #submit_form_button_mobile,
+[data-theme='docuseal_dark'] #expand_form_button {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme='docuseal_dark'] #complete_form_button:hover,
+[data-theme='docuseal_dark'] #submit_form_button_mobile:hover,
+[data-theme='docuseal_dark'] #expand_form_button:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
 }

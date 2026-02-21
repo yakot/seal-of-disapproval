@@ -13,4 +13,19 @@ class UserMailer < ApplicationMailer
            subject: I18n.t('you_are_invited_to_product_name', product_name: Docuseal.product_name))
     end
   end
+
+  def welcome_email(user)
+    @current_account = user.account
+    @user = user
+
+    assign_message_metadata('welcome_email', @user)
+
+    mail(to: @user.friendly_name, from: 'Talha from GoSign <talha@founding.dev>', subject: 'Welcome to GoSign')
+  end
+
+  def registration_otp_email(email)
+    @otp_code = EmailVerificationCodes.generate("registration:#{email.downcase.strip}")
+
+    mail(to: email, subject: I18n.t('email_verification'))
+  end
 end

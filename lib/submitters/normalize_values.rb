@@ -236,7 +236,7 @@ module Submitters
 
       return blob if blob
 
-      data = DownloadUtils.call(url, validate: true).body
+      data = DownloadUtils.call(url).body
 
       checksum = Digest::MD5.base64digest(data)
 

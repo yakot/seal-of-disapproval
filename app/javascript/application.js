@@ -53,13 +53,40 @@ import GoogleDriveFilePicker from './elements/google_drive_file_picker'
 import OpenModal from './elements/open_modal'
 import BarChart from './elements/bar_chart'
 import FieldCondition from './elements/field_condition'
+import SubmissionSelector from './elements/submission_selector'
+import AttributionCapture from './elements/attribution_capture'
+import AnalyticsEvents from './elements/analytics_events'
 
 import * as TurboInstantClick from './lib/turbo_instant_click'
+import { getThemeSurface, initTheme } from './lib/theme'
 
 TurboInstantClick.start()
+initTheme()
 
 document.addEventListener('turbo:before-cache', () => {
   window.flash?.remove()
+})
+
+document.addEventListener('turbo:load', () => {
+  if (window.cioanalytics) {
+    window.cioanalytics.page()
+  }
+
+  if (typeof gtag === 'function') {
+    gtag('event', 'page_view', { page_path: window.location.pathname })
+  }
+
+  if (window.posthog) {
+    window.posthog.capture('$pageview')
+  }
+
+  if (typeof fbq === 'function') {
+    fbq('track', 'PageView')
+  }
+
+  if (typeof twq === 'function') {
+    twq('track', 'PageView')
+  }
 })
 
 document.addEventListener('keyup', (e) => {
@@ -144,6 +171,9 @@ safeRegisterElement('google-drive-file-picker', GoogleDriveFilePicker)
 safeRegisterElement('open-modal', OpenModal)
 safeRegisterElement('bar-chart', BarChart)
 safeRegisterElement('field-condition', FieldCondition)
+safeRegisterElement('submission-selector', SubmissionSelector)
+safeRegisterElement('attribution-capture', AttributionCapture)
+safeRegisterElement('analytics-events', AnalyticsEvents)
 
 safeRegisterElement('template-builder', class extends HTMLElement {
   connectedCallback () {
@@ -156,7 +186,7 @@ safeRegisterElement('template-builder', class extends HTMLElement {
     this.app = createApp(TemplateBuilder, {
       template: reactive(JSON.parse(this.dataset.template)),
       customFields: reactive(JSON.parse(this.dataset.customFields || '[]')),
-      backgroundColor: '#faf7f5',
+      backgroundColor: getThemeSurface(),
       locale: this.dataset.locale,
       withPhone: this.dataset.withPhone === 'true',
       withVerification: ['true', 'false'].includes(this.dataset.withVerification) ? this.dataset.withVerification === 'true' : null,

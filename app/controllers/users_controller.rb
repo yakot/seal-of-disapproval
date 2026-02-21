@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to settings_billing_index_path, alert: I18n.t('subscription_required_for_users')
+  end
+
+  before_action :authorize_feature_access
   load_and_authorize_resource :user, only: %i[index edit update destroy]
 
   before_action :build_user, only: %i[new create]
@@ -109,5 +114,9 @@ class UsersController < ApplicationController
     else
       {}
     end
+  end
+
+  def authorize_feature_access
+    authorize!(:access, :settings_users)
   end
 end

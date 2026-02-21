@@ -1,0 +1,49 @@
+FROM ruby:4.0.1-alpine
+
+ENV RAILS_ENV=development
+ENV NODE_ENV=development
+ENV LD_PRELOAD=/lib/libgcompat.so.0
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --no-cache \
+    build-base \
+    sqlite-dev \
+    libpq-dev \
+    mariadb-dev \
+    vips-dev \
+    yaml-dev \
+    nodejs \
+    yarn \
+    git \
+    tzdata \
+    dos2unix \
+    gcompat \
+    wget \
+    ca-certificates \
+    libreoffice-common \
+    libreoffice-writer \
+    font-noto \
+    font-noto-cjk \
+    ttf-freefont \
+    ttf-liberation
+
+# Install pdfium
+RUN wget -O /tmp/pdfium-linux.tgz "https://github.com/docusealco/pdfium-binaries/releases/latest/download/pdfium-linux-$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/').tgz" && \
+    mkdir -p /tmp/pdfium-linux && \
+    tar -xzf /tmp/pdfium-linux.tgz -C /tmp/pdfium-linux && \
+    cp /tmp/pdfium-linux/lib/libpdfium.so /usr/lib/libpdfium.so && \
+    rm -rf /tmp/pdfium-linux /tmp/pdfium-linux.tgz
+
+# Install gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Install JS dependencies
+COPY package.json yarn.lock ./
+RUN yarn install
+
+EXPOSE 3000 3035
+
+CMD ["sh", "-c", "bundle exec rails s -b 0.0.0.0"]

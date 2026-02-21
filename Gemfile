@@ -14,6 +14,10 @@ gem 'csv', require: false
 gem 'csv-safe', require: false
 gem 'devise'
 gem 'devise-two-factor'
+gem 'omniauth', '~> 2.1'
+gem 'omniauth-rails_csrf_protection', '~> 1.0'
+gem 'omniauth-google-oauth2', '~> 1.2'
+gem 'omniauth-microsoft_graph', '~> 2.0'
 gem 'dotenv', require: false
 gem 'email_typo'
 gem 'faraday'
@@ -23,6 +27,7 @@ gem 'hexapdf'
 gem 'image_processing'
 gem 'jwt', require: false
 gem 'lograge'
+gem 'mysql2', require: false
 gem 'numo-narray-alt', require: false
 gem 'oj'
 gem 'onnxruntime', require: false
@@ -44,8 +49,8 @@ gem 'shakapacker'
 gem 'sidekiq'
 gem 'sqlite3', require: false
 gem 'strip_attributes'
-gem 'trilogy', github: 'trilogy-libraries/trilogy', glob: 'contrib/ruby/*.gemspec', require: false
 gem 'turbo-rails'
+gem 'stripe'
 gem 'twitter_cldr', require: false
 gem 'tzinfo-data'
 

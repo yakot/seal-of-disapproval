@@ -6,6 +6,7 @@ class SetupController < ApplicationController
   skip_authorization_check
 
   before_action :redirect_to_root_if_signed, if: :signed_in?
+  before_action :redirect_to_registration_if_multitenant
   before_action :ensure_first_user_not_created!
 
   def index
@@ -68,6 +69,10 @@ class SetupController < ApplicationController
 
   def redirect_to_root_if_signed
     redirect_to root_path, notice: I18n.t('you_are_already_signed_in')
+  end
+
+  def redirect_to_registration_if_multitenant
+    redirect_to new_registration_path if Docuseal.multitenant?
   end
 
   def ensure_first_user_not_created!

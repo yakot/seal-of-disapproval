@@ -4,7 +4,7 @@ The API endpoint provides the ability to retrieve a list of available submission
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/submissions \
+  --url https://app.gosign.work/submissions \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -119,7 +119,7 @@ The API endpoint provides the functionality to retrieve information about a subm
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/submissions/1001 \
+  --url https://app.gosign.work/submissions/1001 \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -156,7 +156,7 @@ This endpoint returns a list of partially filled documents for a submission. If 
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/submissions/1001/documents \
+  --url https://app.gosign.work/submissions/1001/documents \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -193,7 +193,7 @@ This API endpoint allows you to create signature requests (submissions) for a do
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/submissions \
+  --url https://app.gosign.work/submissions \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"template_id":1000001,"send_email":true,"submitters":[{"role":"First Party","email":"john.doe@example.com"}]}'
@@ -606,7 +606,7 @@ The API endpoint provides the functionality to create one-off submission request
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/submissions/pdf \
+  --url https://app.gosign.work/submissions/pdf \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"Test Submission Document","documents":[{"name":"string","file":"base64","fields":[{"name":"string","areas":[{"x":0,"y":0,"w":0,"h":0,"page":1}]}]}],"submitters":[{"role":"First Party","email":"john.doe@example.com"}]}'
@@ -1162,7 +1162,7 @@ The API endpoint provides functionality to create a one-off submission request f
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/submissions/docx \
+  --url https://app.gosign.work/submissions/docx \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"Test Submission Document","variables":{"variable_name":"value"},"documents":[{"name":"string","file":"base64"}],"submitters":[{"role":"First Party","email":"john.doe@example.com"}]}'
@@ -1616,7 +1616,7 @@ This API endpoint allows you to create a one-off submission request document usi
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/submissions/html \
+  --url https://app.gosign.work/submissions/html \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"Test Submission Document","documents":[{"name":"Test Document","html":"<p>Lorem Ipsum is simply dummy text of the\n<text-field\n  name=\"Industry\"\n  role=\"First Party\"\n  required=\"false\"\n  style=\"width: 80px; height: 16px; display: inline-block; margin-bottom: -4px\">\n</text-field>\nand typesetting industry</p>\n"}],"submitters":[{"role":"First Party","email":"john.doe@example.com"}]}'
@@ -2085,7 +2085,7 @@ The API endpoint allows you to archive a submission.
 
 ```shell
 curl --request DELETE \
-  --url https://api.docuseal.com/submissions/1001 \
+  --url https://app.gosign.work/submissions/1001 \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -2122,7 +2122,7 @@ The API endpoint provides the ability to retrieve a list of submitters.
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/submitters \
+  --url https://app.gosign.work/submitters \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -2235,7 +2235,7 @@ The API endpoint provides functionality to retrieve information about a submitte
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/submitters/500001 \
+  --url https://app.gosign.work/submitters/500001 \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -2272,7 +2272,7 @@ The API endpoint allows you to update submitter details, pre-fill or update fiel
 
 ```shell
 curl --request PUT \
-  --url https://api.docuseal.com/submitters/500001 \
+  --url https://app.gosign.work/submitters/500001 \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"email":"john.doe@example.com","fields":[{"name":"First Name","default_value":"Acme"}]}'
@@ -2595,7 +2595,7 @@ The API endpoint provides the ability to retrieve a list of available document t
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/templates \
+  --url https://app.gosign.work/templates \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -2695,7 +2695,7 @@ The API endpoint provides the functionality to retrieve information about a docu
 
 ```shell
 curl --request GET \
-  --url https://api.docuseal.com/templates/1000001 \
+  --url https://app.gosign.work/templates/1000001 \
   --header 'X-Auth-Token: API_KEY'
 ```
 
@@ -2733,7 +2733,7 @@ The API endpoint provides the functionality to create a fillable document templa
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/templates/pdf \
+  --url https://app.gosign.work/templates/pdf \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"Test PDF","documents":[{"name":"string","file":"base64","fields":[{"name":"string","areas":[{"x":0,"y":0,"w":0,"h":0,"page":1}]}]}]}'
@@ -3080,7 +3080,7 @@ The API endpoint provides the functionality to create a fillable document templa
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/templates/docx \
+  --url https://app.gosign.work/templates/docx \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"Test DOCX","documents":[{"name":"string","file":"base64"}]}'
@@ -3408,7 +3408,7 @@ The API endpoint provides the functionality to seamlessly generate a PDF documen
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/templates/html \
+  --url https://app.gosign.work/templates/html \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"html":"<p>Lorem Ipsum is simply dummy text of the\n<text-field\n  name=\"Industry\"\n  role=\"First Party\"\n  required=\"false\"\n  style=\"width: 80px; height: 16px; display: inline-block; margin-bottom: -4px\">\n</text-field>\nand typesetting industry</p>\n","name":"Test Template"}'
@@ -3524,7 +3524,7 @@ The API endpoint allows you to clone existing template into a new template.
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/templates/1000001/clone \
+  --url https://app.gosign.work/templates/1000001/clone \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"Cloned Template"}'
@@ -3588,7 +3588,7 @@ The API endpoint allows you to merge multiple templates with documents and field
 
 ```shell
 curl --request POST \
-  --url https://api.docuseal.com/templates/merge \
+  --url https://app.gosign.work/templates/merge \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"template_ids":[321,432],"name":"Merged Template"}'
@@ -3671,7 +3671,7 @@ The API endpoint provides the functionality to move a document template to a dif
 
 ```shell
 curl --request PUT \
-  --url https://api.docuseal.com/templates/1000001 \
+  --url https://app.gosign.work/templates/1000001 \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"name":"New Document Name","folder_name":"New Folder"}'
@@ -3747,7 +3747,7 @@ The API endpoint allows you to add, remove or replace documents in the template 
 
 ```shell
 curl --request PUT \
-  --url https://api.docuseal.com/templates/1000001/documents \
+  --url https://app.gosign.work/templates/1000001/documents \
   --header 'X-Auth-Token: API_KEY' \
   --header 'content-type: application/json' \
   --data '{"documents":[{"file":"string"}]}'
@@ -3841,7 +3841,7 @@ The API endpoint allows you to archive a document template.
 
 ```shell
 curl --request DELETE \
-  --url https://api.docuseal.com/templates/1000001 \
+  --url https://app.gosign.work/templates/1000001 \
   --header 'X-Auth-Token: API_KEY'
 ```
 

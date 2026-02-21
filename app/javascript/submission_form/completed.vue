@@ -86,15 +86,9 @@
       </a>
     </div>
     <div
-      v-if="attribution"
+      v-if="false"
       class="text-center mt-4"
     >
-      {{ t('powered_by') }}
-      <a
-        href="https://www.docuseal.com/start"
-        target="_blank"
-        class="underline"
-      >DocuSeal</a> - {{ t('open_source_documents_software') }}
     </div>
   </div>
 </template>
@@ -161,11 +155,6 @@ export default {
       required: false,
       default: false
     },
-    fetchOptions: {
-      type: Object,
-      required: false,
-      default: () => ({})
-    },
     completedButton: {
       type: Object,
       required: false,
@@ -219,10 +208,7 @@ export default {
     download () {
       this.isDownloading = true
 
-      fetch(this.baseUrl + `/submitters/${this.submitterSlug}/download`, {
-        method: 'GET',
-        ...this.fetchOptions
-      }).then(async (response) => {
+      fetch(this.baseUrl + `/submitters/${this.submitterSlug}/download`).then(async (response) => {
         if (response.ok) {
           const urls = await response.json()
           const isMobileSafariIos = 'ontouchstart' in window && navigator.maxTouchPoints > 0 && /AppleWebKit/i.test(navigator.userAgent)

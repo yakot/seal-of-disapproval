@@ -14,7 +14,6 @@ module Submitters
   UnableToSendCode = Class.new(StandardError)
   InvalidOtp = Class.new(StandardError)
   MaliciousFileExtension = Class.new(StandardError)
-  ArgumentError = Class.new(StandardError)
 
   DANGEROUS_EXTENSIONS = Set.new(%w[
     exe com bat cmd scr pif vbs vbe js jse wsf wsh msi msp
@@ -134,7 +133,7 @@ module Submitters
                                                filename: file.original_filename,
                                                content_type: file.content_type)
       else
-        raise ArgumentError, 'file param is missing'
+        ActiveStorage::Blob.find_signed(params[:blob_signed_id])
       end
 
     ActiveStorage::Attachment.create!(
@@ -177,7 +176,8 @@ module Submitters
       if delay_seconds
         SendSubmitterInvitationEmailJob.perform_in((delay_seconds + index).seconds, 'submitter_id' => submitter.id)
       else
-        SendSubmitterInvitationEmailJob.perform_async('submitter_id' => submitter.id)
+        # Send synchronously for immediate delivery
+        SendSubmitterInvitationEmailJob.new.perform('submitter_id' => submitter.id)
       end
     end
   end

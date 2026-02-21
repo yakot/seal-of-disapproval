@@ -18,8 +18,13 @@ threads min_threads_count, max_threads_count
 worker_timeout 3600 if ENV.fetch('RAILS_ENV', 'development') == 'development'
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+# In production, use Unix socket for better performance
 #
-port ENV.fetch('PORT', 3000)
+if ENV.fetch('RAILS_ENV', 'development') == 'production'
+  bind "unix:///var/www/gosign-app/shared/tmp/sockets/puma.sock"
+else
+  port ENV.fetch('PORT', 3000)
+end
 
 # Specifies the `environment` that Puma will run in.
 #
@@ -47,12 +52,22 @@ end
 # before forking the application. This takes advantage of Copy On Write
 # process behavior so workers use less memory.
 #
-# preload_app!
+# Enable preload_app in production for better memory usage and zero-downtime deploys
+preload_app! if ENV.fetch('RAILS_ENV', 'development') == 'production'
 
-if ENV['MULTITENANT'] != 'true' || ENV['DEMO'] == 'true'
+# Hooks for zero-downtime deployment
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
+
+before_fork do
+  ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
+end
+
+# Sidekiq runs as separate worker process (see Procfile.dev / Procfile)
+# Redis server plugin for non-multitenant setups
+if (ENV['MULTITENANT'] != 'true' || ENV['DEMO'] == 'true') && ENV.fetch('RAILS_ENV', 'development') != 'development'
   require_relative '../lib/puma/plugin/redis_server'
-  require_relative '../lib/puma/plugin/sidekiq_embed'
 
-  plugin :sidekiq_embed
   plugin :redis_server
 end

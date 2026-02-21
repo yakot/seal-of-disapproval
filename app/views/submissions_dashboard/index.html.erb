@@ -1,86 +1,108 @@
 <% filter_params = params.permit(Submissions::Filter::ALLOWED_PARAMS).compact_blank %>
 <% is_show_tabs = (@pagy.count.nil? || @pagy.count >= 5) || params[:status].present? || filter_params.present? %>
 <% if Docuseal.demo? %><%= render 'shared/demo_alert' %><% end %>
-<div class="flex justify-between items-center w-full mb-4">
-  <div class="flex items-center flex-grow min-w-0">
-    <div class="mr-2">
-      <%= render 'dashboard/toggle_view', selected: 'submissions' %>
+
+<div class="mb-8">
+  <div class="flex justify-between items-center w-full mb-6">
+    <div class="flex items-center flex-grow min-w-0">
+      <div class="mr-4">
+        <%= render 'dashboard/toggle_view', selected: 'submissions' %>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+          <%= t('submissions') %>
+        </h1>
+        <p class="mt-1 text-sm text-gray-500">Manage your document envelopes and status</p>
+      </div>
     </div>
-    <h1 class="text-2xl truncate md:text-3xl sm:text-4xl font-bold md:block <%= 'hidden' if params[:q].present? %>">
-      <%= t('submissions') %>
-    </h1>
-  </div>
-  <div class="flex space-x-2">
-    <% if params[:q].present? || @pagy.pages > 1 || filter_params.present? %>
-      <%= render 'shared/search_input' %>
-    <% end %>
-    <% if can?(:create, ::Template) %>
-      <span class="hidden sm:block">
-        <%= render 'templates/upload_button' %>
-      </span>
-      <%= link_to new_template_path, class: 'white-button !border gap-2', data: { turbo_frame: :modal } do %>
-        <%= svg_icon('plus', class: 'w-6 h-6 stroke-2') %>
-        <span class="hidden md:block"><%= t('create') %></span>
+    <div class="flex space-x-3">
+      <% if params[:q].present? || @pagy.pages > 1 || filter_params.present? %>
+        <%= render 'shared/search_input' %>
       <% end %>
+      <% if can?(:create, ::Template) %>
+        <span class="hidden sm:block">
+          <%= render 'templates/upload_button' %>
+        </span>
+        <%= link_to new_template_path, class: 'btn btn-primary gap-2 shadow-sm', data: { turbo_frame: :modal } do %>
+          <%= svg_icon('plus', class: 'w-5 h-5 stroke-2') %>
+          <span class="hidden md:block"><%= t('create') %></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <% view_archived_html = capture do %>
+    <% if can?(:manage, :countless) || current_account.submissions.where.not(archived_at: nil).exists? %>
+      <div>
+        <a href="<%= submissions_archived_index_path %>" class="text-sm text-primary hover:text-primary/80 font-medium flex items-center">
+           <%= svg_icon('archive', class: 'w-4 h-4 mr-1') %>
+           <%= t('view_archived') %>
+        </a>
+      </div>
     <% end %>
-  </div>
+  <% end %>
+
+  <% if is_show_tabs %>
+    <div class="border-b border-gray-200 mb-6">
+      <div class="flex items-center flex-col md:flex-row justify-between pb-4 gap-4">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+          <a href="<%= url_for(params.to_unsafe_h.except(:status)) %>" 
+             class="<%= params[:status].blank? ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+            <%= svg_icon('list', class: 'w-5 h-5 mr-2') %>
+            <%= t('all') %>
+          </a>
+
+          <a href="<%= url_for(params.to_unsafe_h.merge(status: :pending)) %>" 
+             class="<%= params[:status] == 'pending' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+            <%= svg_icon('clock', class: 'w-5 h-5 mr-2') %>
+            <%= t('pending') %>
+          </a>
+
+          <a href="<%= url_for(params.to_unsafe_h.merge(status: :completed)) %>" 
+             class="<%= params[:status] == 'completed' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+            <%= svg_icon('circle_check', class: 'w-5 h-5 mr-2') %>
+            <%= t('completed') %>
+          </a>
+        </nav>
+        
+        <div class="flex items-center space-x-2">
+          <%= render 'submissions_filters/applied_filters', filter_params: %>
+          <%= render 'submissions_filters/filter_button', filter_params: %>
+          <%= render 'submissions_filters/actions', filter_params: %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @pagy.count.nil? || @pagy.count > 0 %>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div class="divide-y divide-gray-200">
+        <%= render partial: 'templates/submission', collection: @submissions, locals: { with_template: true } %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if params[:q].blank? && params[:status].blank? && filter_params.blank? && @pagy.count.present? && @pagy.count < 5 %>
+    <div class="mt-6">
+      <%= render 'templates/dropzone' %>
+    </div>
+  <% end %>
+
+  <% if @submissions.present? || (params[:q].blank? && filter_params.blank?) %>
+    <div class="mt-6 flex items-center justify-between">
+      <% if @pagy.pages > 1 %>
+        <%= render 'shared/pagination', pagy: @pagy, items_name: 'submissions', left_additional_html: view_archived_html %>
+      <% else %>
+        <div class="mt-2">
+          <%= view_archived_html %>
+        </div>
+      <% end %>
+    </div>
+  <% elsif params[:q].present? || filter_params.present? %>
+    <div class="text-center py-12 bg-white rounded-lg border border-gray-200 mt-6">
+      <%= svg_icon('search', class: 'mx-auto h-12 w-12 text-gray-400') %>
+      <h3 class="mt-2 text-sm font-medium text-gray-900"><%= t('submissions_not_found') %></h3>
+      <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter to find what you're looking for.</p>
+    </div>
+  <% end %>
 </div>
-<% view_archived_html = capture do %>
-  <% if can?(:manage, :countless) || current_account.submissions.where.not(archived_at: nil).exists? %>
-    <div>
-      <a href="<%= submissions_archived_index_path %>" class="link text-sm"><%= t('view_archived') %></a>
-    </div>
-  <% end %>
-<% end %>
-<% if is_show_tabs %>
-  <div class="flex items-center flex-col md:flex-row md:flex-wrap gap-2 mb-4">
-    <div class="flex items-center md:items-end flex-col md:flex-row gap-2 w-full md:w-fit">
-      <a href="<%= url_for(params: request.query_parameters.except('status')) %>" class="<%= params[:status].blank? ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-600">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('list', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('all') %></span>
-        </div>
-      </a>
-      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'pending')) %>" class="<%= params[:status] == 'pending' ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-600">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('clock', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('pending') %></span>
-        </div>
-      </a>
-      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'completed')) %>" class="<%= params[:status] == 'completed' ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-600">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('circle_check', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('completed') %></span>
-        </div>
-      </a>
-    </div>
-    <div class="flex items-end flex-col md:flex-row gap-2 w-full md:w-fit">
-      <%= render 'submissions_filters/applied_filters', filter_params: %>
-      <%= render 'submissions_filters/filter_button', filter_params: %>
-      <%= render 'submissions_filters/actions', filter_params: %>
-    </div>
-  </div>
-<% end %>
-<% if @pagy.count.nil? || @pagy.count > 0 %>
-  <div class="space-y-4">
-    <%= render partial: 'templates/submission', collection: @submissions, locals: { with_template: true } %>
-  </div>
-<% end %>
-<% if params[:q].blank? && params[:status].blank? && filter_params.blank? && @pagy.count.present? && @pagy.count < 5 %>
-  <%= render 'templates/dropzone' %>
-<% end %>
-<% if @submissions.present? || (params[:q].blank? && filter_params.blank?) %>
-  <% if @pagy.pages > 1 %>
-    <%= render 'shared/pagination', pagy: @pagy, items_name: 'submissions', left_additional_html: view_archived_html %>
-  <% else %>
-    <div class="mt-2">
-      <%= view_archived_html %>
-    </div>
-  <% end %>
-<% elsif params[:q].present? || filter_params.present? %>
-  <div class="text-center">
-    <div class="mt-16 text-3xl font-semibold">
-      <%= t('submissions_not_found') %>
-    </div>
-  </div>
-<% end %>

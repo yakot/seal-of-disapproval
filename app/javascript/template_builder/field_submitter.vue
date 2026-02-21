@@ -89,7 +89,7 @@
   </div>
   <div
     v-else
-    class="dropdown"
+    class="dropdown w-full"
     @mouseenter="renderDropdown = true"
     @touchstart="renderDropdown = true"
   >
@@ -108,16 +108,16 @@
       v-else
       ref="label"
       tabindex="0"
-      class="group cursor-pointer group/contenteditable-container rounded-md p-2 border border-base-300 hover:border-content w-full flex justify-between items-center"
+      class="group cursor-pointer group/contenteditable-container rounded-md p-2.5 border border-gray-300 hover:border-primary w-full flex justify-between items-center bg-white shadow-sm transition-colors"
     >
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-3 overflow-hidden">
         <span
-          class="w-3 h-3 rounded-full flex-shrink-0"
+          class="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-white"
           :class="colors[submitters.indexOf(selectedSubmitter) % colors.length]"
         />
         <Contenteditable
           v-model="selectedSubmitter.name"
-          class="cursor-text"
+          class="cursor-text font-medium text-gray-700 truncate"
           :icon-inline="true"
           :editable="editable"
           :select-on-edit-click="true"
@@ -125,11 +125,11 @@
           @update:model-value="$emit('name-change', selectedSubmitter)"
         />
       </div>
-      <span class="flex items-center transition-all duration-75 group-hover:border border-base-content/20 border-dashed w-6 h-6 justify-center rounded flex-shrink-0">
+      <span class="flex items-center text-gray-400 group-hover:text-primary transition-colors">
         <component
           :is="editable ? 'IconPlus' : 'IconChevronDown'"
-          width="18"
-          height="18"
+          width="16"
+          height="16"
         />
       </span>
     </label>
@@ -143,69 +143,68 @@
       <li
         v-for="(submitter, index) in submitters"
         :key="submitter.uuid"
-        class="w-full"
+        class="w-full mb-0.5"
       >
         <a
           href="#"
-          class="flex px-2 group justify-between items-center"
-          :class="{ 'active': submitter === selectedSubmitter, 'py-0.5': submitters.length > 8 }"
+          class="flex px-2 py-2 group justify-between items-center rounded-md hover:bg-gray-50"
+          :class="{ 'bg-blue-50 text-primary': submitter === selectedSubmitter }"
           @click.prevent="selectSubmitter(submitter)"
         >
-          <span class="py-1 flex items-center">
+          <span class="flex items-center overflow-hidden">
             <span
-              class="rounded-full w-3 h-3 ml-1 mr-3 flex-shrink-0"
+              class="rounded-full w-2.5 h-2.5 ml-1 mr-3 flex-shrink-0"
               :class="colors[index % colors.length]"
             />
-            <span>
+            <span class="truncate font-medium text-sm">
               {{ submitter.name }}
             </span>
           </span>
           <div
             v-if="!compact && submitters.length > 1 && editable"
-            class="flex"
+            class="flex items-center"
           >
             <div class="flex-col pr-1 flex invisible group-hover:visible -mt-1 h-0">
               <button
                 :title="t('up')"
-                class="relative w-2"
-                style="font-size: 10px; margin-bottom: -4px"
+                class="relative w-4 h-3 flex items-center justify-center hover:text-primary"
                 @click.prevent.stop="[move(submitter, -1), $refs.label.focus()] "
               >
-                ▲
+                <IconChevronUp width="10" />
               </button>
               <button
                 :title="t('down')"
-                class="relative w-2"
-                style="font-size: 10px; margin-top: -4px"
+                class="relative w-4 h-3 flex items-center justify-center hover:text-primary"
                 @click.prevent.stop="[move(submitter, 1), $refs.label.focus()] "
               >
-                ▼
+                <IconChevronDown width="10" />
               </button>
             </div>
             <button
               v-if="!compact && submitters.length > 1 && editable"
-              class="invisible group-hover:visible px-2"
+              class="invisible group-hover:visible px-1 text-gray-400 hover:text-red-500"
               @click.prevent.stop="remove(submitter)"
             >
-              <IconTrashX :width="18" />
+              <IconTrashX :width="16" />
             </button>
           </div>
         </a>
       </li>
       <li
         v-if="submitters.length < names.length && editable && allowAddNew"
-        class="w-full"
+        class="w-full mt-1 pt-1 border-t border-gray-100"
       >
         <a
           href="#"
-          class="flex px-2"
+          class="flex px-2 py-2 text-primary hover:bg-blue-50 rounded-md font-medium text-sm"
           @click.prevent="addSubmitter"
         >
           <IconUserPlus
-            :width="20"
-            :stroke-width="1.6"
+            :width="18"
+            :stroke-width="2"
+            class="mr-2"
           />
-          <span class="py-1">
+          <span>
             {{ t('add') }} {{ names[lastPartyIndex] }}
           </span>
         </a>
@@ -287,16 +286,16 @@ export default {
   computed: {
     colors () {
       return [
-        'bg-red-500',
-        'bg-sky-500',
-        'bg-emerald-500',
-        'bg-yellow-300',
-        'bg-purple-600',
-        'bg-pink-500',
-        'bg-cyan-500',
-        'bg-orange-500',
-        'bg-lime-500',
-        'bg-indigo-500'
+        'bg-primary',
+        'bg-secondary',
+        'bg-accent',
+        'bg-primary/80',
+        'bg-secondary/80',
+        'bg-accent/80',
+        'bg-primary/60',
+        'bg-secondary/60',
+        'bg-accent/60',
+        'bg-neutral'
       ]
     },
     names () {

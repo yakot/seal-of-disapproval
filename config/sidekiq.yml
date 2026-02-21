@@ -6,6 +6,7 @@ queues:
   - [mailers, 1]
   - [recurrent, 1]
   - [rollbar, 1]
+  - [tracking, 1]
 
 production:
   :concurrency: 15

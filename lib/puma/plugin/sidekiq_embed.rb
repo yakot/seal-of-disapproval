@@ -14,7 +14,12 @@ Puma::Plugin.create do
   end
 
   def start(launcher)
+    $stdout.puts '[SidekiqEmbed] Plugin start() called'
+    $stdout.flush
+
     launcher.events.after_booted do
+      $stdout.puts "[SidekiqEmbed] after_booted fired, workers=#{Puma.stats_hash[:workers].to_i}"
+      $stdout.flush
       next if Puma.stats_hash[:workers].to_i != 0
 
       start_sidekiq!
@@ -36,6 +41,9 @@ Puma::Plugin.create do
     Thread.new do
       wait_for_redis!
 
+      $stdout.puts '[SidekiqEmbed] Starting Sidekiq...'
+      $stdout.flush
+
       configs = Sidekiq.configure_embed do |config|
         config.logger.level = Logger::INFO
         sidekiq_config = YAML.load_file('config/sidekiq.yml')
@@ -53,6 +61,14 @@ Puma::Plugin.create do
       @sidekiq = Sidekiq::Launcher.new(configs, embedded: true)
 
       @sidekiq.run
+
+      $stdout.puts '[SidekiqEmbed] Sidekiq running.'
+      $stdout.flush
+    rescue => e
+      $stderr.puts "[SidekiqEmbed] ERROR: #{e.class}: #{e.message}"
+      $stderr.puts e.backtrace.first(10).join("\n")
+      $stderr.flush
+      raise
     end
   end
 

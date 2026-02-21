@@ -29,7 +29,7 @@
         :is-drag="isDrag"
         @move="onSelectionBoxMove"
         @contextmenu="openSelectionContextMenu"
-        @close-context-menu="closeContextMenu"
+        @close-context-menu="closeSelectionContextMenu"
       />
       <FieldArea
         v-for="(item, i) in areas"
@@ -48,7 +48,6 @@
         :default-submitters="defaultSubmitters"
         :max-page="totalPages - 1"
         :is-select-mode="isSelectMode"
-        :is-mobile="isMobile"
         @start-resize="resizeDirection = $event"
         @stop-resize="resizeDirection = null"
         @remove="$emit('remove-area', item.area)"
@@ -75,39 +74,29 @@
         class="absolute outline-dashed outline-gray-400 pointer-events-none z-20"
         :style="selectionRectStyle"
       />
-      <FieldContextMenu
-        v-if="contextMenu && contextMenu.field"
+      <ContextMenu
+        v-if="contextMenu"
         :context-menu="contextMenu"
         :field="contextMenu.field"
-        :with-signature-id="withSignatureId"
-        :with-prefillable="withPrefillable"
-        :editable="editable"
-        :default-field="defaultFieldsIndex[contextMenu.field.name]"
-        @copy="handleCopy"
-        @delete="handleDelete"
-        @close="closeContextMenu"
-        @set-draw="$emit('set-draw', $event)"
-        @scroll-to="$emit('scroll-to', $event)"
-        @save="save"
-        @add-custom-field="$emit('add-custom-field', $event)"
-      />
-      <SelectionContextMenu
-        v-else-if="contextMenu && contextMenu.areas"
-        :context-menu="contextMenu"
-        :editable="editable"
-        :template="template"
-        @copy="handleSelectionCopy"
-        @delete="handleSelectionDelete"
-        @close="closeContextMenu"
-      />
-      <PageContextMenu
-        v-else-if="contextMenu && !contextMenu.field && !contextMenu.areas"
-        :context-menu="contextMenu"
         :editable="editable"
         :with-fields-detection="withFieldsDetection"
+        @copy="handleCopy"
+        @delete="handleDelete"
         @paste="handlePaste"
         @autodetect-fields="handleAutodetectFields"
         @close="closeContextMenu"
+      />
+      <ContextMenu
+        v-if="selectionContextMenu"
+        :context-menu="selectionContextMenu"
+        :editable="editable"
+        :is-multi-selection="true"
+        :selected-areas="selectedAreasRef.value"
+        :template="template"
+        @copy="handleSelectionCopy"
+        @delete="handleSelectionDelete"
+        @align="handleSelectionAlign"
+        @close="closeSelectionContextMenu"
       />
     </div>
     <div
@@ -130,21 +119,17 @@
 
 <script>
 import FieldArea from './area'
-import FieldContextMenu from './field_context_menu'
-import SelectionContextMenu from './selection_context_menu'
-import PageContextMenu from './page_context_menu'
+import ContextMenu from './context_menu'
 import SelectionBox from './selection_box'
 
 export default {
   name: 'TemplatePage',
   components: {
     FieldArea,
-    FieldContextMenu,
-    SelectionContextMenu,
-    PageContextMenu,
+    ContextMenu,
     SelectionBox
   },
-  inject: ['fieldTypes', 'defaultDrawFieldType', 'fieldsDragFieldRef', 'customDragFieldRef', 'assignDropAreaSize', 'selectedAreasRef', 'template', 'isSelectModeRef', 'save'],
+  inject: ['fieldTypes', 'defaultDrawFieldType', 'fieldsDragFieldRef', 'customDragFieldRef', 'assignDropAreaSize', 'selectedAreasRef', 'template', 'isSelectModeRef'],
   props: {
     image: {
       type: Object,
@@ -154,11 +139,6 @@ export default {
       type: Object,
       required: false,
       default: null
-    },
-    isMobile: {
-      type: Boolean,
-      required: false,
-      default: false
     },
     withSignatureId: {
       type: Boolean,
@@ -248,7 +228,7 @@ export default {
       default: false
     }
   },
-  emits: ['draw', 'drop-field', 'remove-area', 'copy-field', 'paste-field', 'scroll-to', 'copy-selected-areas', 'delete-selected-areas', 'autodetect-fields', 'add-custom-field', 'set-draw'],
+  emits: ['draw', 'drop-field', 'remove-area', 'copy-field', 'paste-field', 'scroll-to', 'copy-selected-areas', 'delete-selected-areas', 'align-selected-areas', 'autodetect-fields', 'add-custom-field'],
   data () {
     return {
       areaRefs: [],
@@ -256,12 +236,13 @@ export default {
       resizeDirection: null,
       newAreas: [],
       contextMenu: null,
-      selectionRect: null
+      selectionRect: null,
+      selectionContextMenu: null
     }
   },
   computed: {
     isSelectMode () {
-      return this.isSelectModeRef.value && !this.drawFieldType && this.editable && !this.drawField && !this.drawCustomField
+      return this.isSelectModeRef.value && !this.drawFieldType && this.editable && !this.drawField
     },
     pageSelectedAreas () {
       if (!this.selectedAreasRef.value) return []
@@ -323,6 +304,11 @@ export default {
       } else {
         return 'text'
       }
+    },
+    isMobile () {
+      const isMobileSafariIos = 'ontouchstart' in window && navigator.maxTouchPoints > 0 && /AppleWebKit/i.test(navigator.userAgent)
+
+      return isMobileSafariIos || /android|iphone|ipad/i.test(navigator.userAgent)
     },
     resizeDirectionClasses () {
       return {
@@ -413,32 +399,29 @@ export default {
       }
     },
     openSelectionContextMenu (event) {
-      if (!this.editable) {
-        return
-      }
-
-      event.preventDefault()
-      event.stopPropagation()
-
       const rect = this.$el.getBoundingClientRect()
 
-      this.contextMenu = {
+      this.selectionContextMenu = {
         x: event.clientX,
         y: event.clientY,
         relativeX: (event.clientX - rect.left) / rect.width,
-        relativeY: (event.clientY - rect.top) / rect.height,
-        areas: this.selectedAreasRef.value
+        relativeY: (event.clientY - rect.top) / rect.height
       }
+    },
+    closeSelectionContextMenu () {
+      this.selectionContextMenu = null
     },
     handleSelectionCopy () {
       this.$emit('copy-selected-areas')
-
-      this.closeContextMenu()
+      this.closeSelectionContextMenu()
     },
     handleSelectionDelete () {
       this.$emit('delete-selected-areas')
-
-      this.closeContextMenu()
+      this.closeSelectionContextMenu()
+    },
+    handleSelectionAlign (direction) {
+      this.$emit('align-selected-areas', direction)
+      this.closeSelectionContextMenu()
     },
     closeContextMenu () {
       this.contextMenu = null

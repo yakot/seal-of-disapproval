@@ -1,0 +1,196 @@
+<div class="bg-gray-50/50 min-h-screen -mt-8 pt-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Welcome Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">
+        <%= t('hello_name', name: current_user.first_name || current_user.email.split('@').first) %>
+      </h1>
+      <p class="mt-1 text-gray-500">Here's what's happening with your documents today.</p>
+    </div>
+
+    <!-- Get Started / Action Bar -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Get started</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Sign a Document -->
+        <%= link_to new_template_path(signing_mode: 'self'), class: "group relative block p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50/50 transition-all text-center", data: { turbo_frame: :modal } do %>
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 group-hover:bg-primary group-hover:text-white transition-colors text-primary mb-4">
+            <%= svg_icon('writing_sign', class: "h-6 w-6") %>
+          </div>
+          <h3 class="text-base font-semibold text-gray-900 group-hover:text-primary">Sign a Document</h3>
+          <p class="mt-1 text-sm text-gray-500">Upload and sign a document yourself</p>
+        <% end %>
+
+        <!-- Send an Envelope -->
+        <%= link_to new_template_path, class: "group relative block p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50/50 transition-all text-center", data: { turbo_frame: :modal } do %>
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 group-hover:bg-primary group-hover:text-white transition-colors text-primary mb-4">
+            <%= svg_icon('send', class: "h-6 w-6") %>
+          </div>
+          <h3 class="text-base font-semibold text-gray-900 group-hover:text-primary">Send an Envelope</h3>
+          <p class="mt-1 text-sm text-gray-500">Send documents to others for signing</p>
+        <% end %>
+
+        <!-- Create Template -->
+        <%= link_to new_template_path, class: "group relative block p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50/50 transition-all text-center", data: { turbo_frame: :modal } do %>
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 group-hover:bg-primary group-hover:text-white transition-colors text-primary mb-4">
+            <%= svg_icon('copy', class: "h-6 w-6") %>
+          </div>
+          <h3 class="text-base font-semibold text-gray-900 group-hover:text-primary">Create Template</h3>
+          <p class="mt-1 text-sm text-gray-500">Create a reusable template</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Overview & Tasks -->
+      <div class="lg:col-span-2 space-y-8">
+        <!-- Tasks Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Tasks</h2>
+            <span class="bg-gray-100 text-gray-600 py-1 px-2.5 rounded-full text-xs font-medium"><%= @tasks.count %></span>
+          </div>
+          
+          <% if @tasks.any? %>
+            <ul class="divide-y divide-gray-100">
+              <% @tasks.each do |task| %>
+                <li class="p-4 hover:bg-gray-50 transition-colors">
+                  <%= link_to submit_form_path(task.slug), target: '_blank', class: "flex items-center justify-between" do %>
+                    <div class="flex items-center space-x-4">
+                      <div class="flex-shrink-0">
+                        <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-amber-100 text-amber-600">
+                          <%= svg_icon('writing', class: "h-5 w-5") %>
+                        </span>
+                      </div>
+                      <div>
+                        <p class="text-sm font-medium text-gray-900 truncate"><%= task.submission.name || "Document ##{task.submission.id}" %></p>
+                        <p class="text-sm text-gray-500">Needs your signature</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center text-sm text-primary font-medium">
+                      Sign Now <%= svg_icon('arrow_right', class: "h-4 w-4 ml-1") %>
+                    </div>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <div class="p-8 text-center text-gray-500">
+              <%= svg_icon('check', class: "h-12 w-12 mx-auto text-green-500 mb-3 opacity-20") %>
+              <p>You have no pending tasks.</p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+            <%= link_to "View All", submissions_path, class: "text-sm text-primary hover:text-primary/80 font-medium" %>
+          </div>
+          
+          <% if @recent_submissions.any? %>
+            <ul class="divide-y divide-gray-100">
+              <% @recent_submissions.each do |submission| %>
+                <li class="p-4 hover:bg-gray-50 transition-colors">
+                  <a href="<%= submission_path(submission) %>" class="block">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                          <% if submission.submitters.where(completed_at: nil).empty? %>
+                            <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-green-100 text-green-600">
+                              <%= svg_icon('check', class: "h-5 w-5") %>
+                            </span>
+                          <% else %>
+                            <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-blue-600">
+                              <%= svg_icon('clock', class: "h-5 w-5") %>
+                            </span>
+                          <% end %>
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900 truncate"><%= submission.name || "Document ##{submission.id}" %></p>
+                          <p class="text-sm text-gray-500">
+                            <%= submission.submitters.count %> recipients • Updated <%= time_ago_in_words(submission.updated_at) %> ago
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <% if submission.submitters.where(completed_at: nil).empty? %>
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Completed
+                          </span>
+                        <% elsif submission.expired? %>
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Expired
+                          </span>
+                        <% else %>
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            In Progress
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <div class="p-8 text-center text-gray-500">
+              <p>No recent activity.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Right Column: Overview Stats -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-8">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900">Overview</h2>
+          </div>
+          <div class="p-6 space-y-6">
+            <!-- Action Required -->
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center space-x-3">
+                <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                <span class="text-gray-600 font-medium group-hover:text-gray-900">Action Required</span>
+              </div>
+              <span class="text-xl font-bold text-gray-900"><%= @tasks.count %></span>
+            </div>
+
+            <!-- Waiting for Others -->
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center space-x-3">
+                <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                <span class="text-gray-600 font-medium group-hover:text-gray-900">Waiting for Others</span>
+              </div>
+              <span class="text-xl font-bold text-gray-900"><%= @waiting_for_others_count %></span>
+            </div>
+
+            <!-- Expiring Soon -->
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center space-x-3">
+                <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                <span class="text-gray-600 font-medium group-hover:text-gray-900">Expiring Soon</span>
+              </div>
+              <span class="text-xl font-bold text-gray-900"><%= @expiring_soon_count %></span>
+            </div>
+
+            <!-- Completed -->
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center space-x-3">
+                <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                <span class="text-gray-600 font-medium group-hover:text-gray-900">Completed</span>
+              </div>
+              <span class="text-xl font-bold text-gray-900"><%= @completed_count %></span>
+            </div>
+          </div>
+          
+          <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+            <%= link_to "View all submissions", submissions_path, class: "text-sm text-primary font-medium hover:text-primary/80" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class WebhookSettingsController < ApplicationController
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to settings_billing_index_path, alert: I18n.t('subscription_required_for_webhooks')
+  end
+
   load_and_authorize_resource :webhook_url, parent: false, only: %i[index show new create update destroy]
   load_and_authorize_resource :webhook_url, only: %i[resend], id_param: :webhook_id
 

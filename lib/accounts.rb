@@ -49,7 +49,11 @@ module Accounts
 
     return user if user
 
-    testing_account = account.dup.tap { |a| a.name = "Testing - #{a.name}" }
+    testing_account = account.dup.tap do |a|
+      a.name = "Testing - #{a.name}"
+      a.stripe_customer_id = nil
+      a.stripe_subscription_id = nil
+    end
     testing_account.uuid = SecureRandom.uuid
 
     ApplicationRecord.transaction do

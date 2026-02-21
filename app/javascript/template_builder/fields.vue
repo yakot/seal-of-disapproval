@@ -25,7 +25,7 @@
       :key="field.uuid"
       :data-uuid="field.uuid"
       :field="field"
-      :type-index="getFieldTypeIndex(field)"
+      :type-index="fields.filter((f) => f.type === field.type).indexOf(field)"
       :editable="editable"
       :with-signature-id="withSignatureId"
       :with-prefillable="withPrefillable"
@@ -127,7 +127,7 @@
     >{{ t('custom') }}</a>
   </div>
   <div
-    v-if="showCustomTab && editable && (customFields.length || newCustomField)"
+    v-if="showCustomTab && editable"
     ref="customFields"
     class="custom-fields"
     @dragover.prevent="onCustomFieldDragover"
@@ -197,7 +197,7 @@
   <div
     v-if="editable && !onlyDefinedFields && (!showCustomTab || (!customFields.length && !newCustomField))"
     id="field-types-grid"
-    class="grid grid-cols-3 gap-1 pb-2 fields-grid"
+    class="grid grid-cols-2 gap-2 pb-2 fields-grid"
   >
     <template
       v-for="(icon, type) in fieldIconsSorted"
@@ -207,24 +207,20 @@
         v-if="fieldTypes.includes(type) || ((withPhone || type != 'phone') && (withPayment || type != 'payment') && (withVerification || type != 'verification') && (withKba || type != 'kba'))"
         :id="`${type}_type_field_button`"
         draggable="true"
-        class="field-type-button group flex items-center justify-center border border-dashed w-full rounded relative fields-grid-item"
-        :style="{ backgroundColor }"
-        :class="drawFieldType === type ? 'border-base-content/40' : 'border-base-300 hover:border-base-content/20'"
+        class="field-type-button group flex flex-col items-center justify-center border w-full rounded-lg p-3 relative transition-all duration-200 hover:shadow-sm bg-white"
+        :class="drawFieldType === type ? 'border-primary text-primary ring-1 ring-primary bg-blue-50' : 'border-gray-200 text-gray-600 hover:border-primary/50 hover:text-primary'"
         @dragstart="onDragstart($event, { type: type })"
         @dragend="$emit('drag-end')"
         @click="['file', 'payment', 'verification', 'kba'].includes(type) ? $emit('add-field', type) : $emit('set-draw-type', type)"
       >
-        <div
-          class="flex items-console transition-all cursor-grab h-full absolute left-0"
-          :class="drawFieldType === type ? 'bg-base-200/50' : 'group-hover:bg-base-200/50'"
-        >
-          <IconDrag class="my-auto" />
+        <div class="mb-2 text-current opacity-80 group-hover:opacity-100 transition-opacity">
+          <component :is="icon" class="w-6 h-6" stroke-width="1.5" />
         </div>
-        <div class="flex items-center flex-col px-2 py-2">
-          <component :is="icon" />
-          <span class="text-xs mt-1">
-            {{ fieldNames[type] }}
-          </span>
+        <span class="text-xs font-medium text-center leading-tight">
+          {{ fieldNames[type] }}
+        </span>
+        <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-300">
+           <IconDrag class="w-3 h-3" />
         </div>
       </button>
       <div
@@ -236,22 +232,22 @@
         <a
           href="https://www.docuseal.com/pricing"
           target="_blank"
-          class="opacity-50 flex items-center justify-center border border-dashed border-base-300 w-full rounded relative fields-grid-item"
+          class="opacity-60 flex flex-col items-center justify-center border border-gray-200 w-full rounded-lg p-3 relative bg-gray-50 hover:bg-gray-100 transition-colors"
           :style="{ backgroundColor }"
         >
-          <div class="w-0 absolute left-0">
+          <div class="absolute top-1 left-1 text-gray-400">
             <IconLock
-              width="18"
-              height="18"
+              width="14"
+              height="14"
               stroke-width="1.5"
             />
           </div>
-          <div class="flex items-center flex-col px-2 py-2">
-            <component :is="icon" />
-            <span class="text-xs mt-1">
-              {{ fieldNames[type] }}
-            </span>
+          <div class="mb-2 text-gray-500">
+            <component :is="icon" class="w-6 h-6" stroke-width="1.5" />
           </div>
+          <span class="text-xs font-medium text-center text-gray-500 leading-tight">
+            {{ fieldNames[type] }}
+          </span>
         </a>
       </div>
       <div
@@ -262,31 +258,31 @@
         <a
           href="https://www.docuseal.com/qualified-electronic-signature"
           target="_blank"
-          class="opacity-50 flex items-center justify-center border border-dashed border-base-300 w-full rounded relative fields-grid-item"
+          class="opacity-60 flex flex-col items-center justify-center border border-gray-200 w-full rounded-lg p-3 relative bg-gray-50 hover:bg-gray-100 transition-colors"
           :style="{ backgroundColor }"
         >
-          <div class="w-0 absolute left-0">
+          <div class="absolute top-1 left-1 text-gray-400">
             <IconLock
-              width="18"
-              height="18"
+              width="14"
+              height="14"
               stroke-width="1.5"
             />
           </div>
-          <div class="flex items-center flex-col px-2 py-2">
-            <component :is="icon" />
-            <span class="text-xs mt-1">
-              {{ fieldNames[type] }}
-            </span>
+          <div class="mb-2 text-gray-500">
+            <component :is="icon" class="w-6 h-6" stroke-width="1.5" />
           </div>
+          <span class="text-xs font-medium text-center text-gray-500 leading-tight">
+            {{ fieldNames[type] }}
+          </span>
         </a>
       </div>
     </template>
   </div>
   <div
-    v-if="fields.length < 4 && editable && withHelp && !showTourStartForm"
-    class="text-xs p-2 border border-base-200 rounded"
+    v-if="fields.length < 4 && editable && withHelp"
+    class="text-xs p-2 border border-gray-200 rounded-lg bg-gray-50 mt-2"
   >
-    <ul class="list-disc list-outside ml-3">
+    <ul class="list-disc list-outside ml-3 text-gray-600 space-y-1">
       <li>
         {{ t('draw_a_text_field_on_the_page_with_a_mouse') }}
       </li>
@@ -336,16 +332,16 @@
     </button>
   </div>
   <div
-    v-show="fields.length < 4 && editable && withHelp && showTourStartForm"
-    class="rounded py-2 px-4 w-full border border-dashed border-base-300"
+    v-if="editable && withHelp"
+    class="rounded-lg p-4 w-full border border-blue-100 bg-blue-50 mt-4 shadow-sm"
   >
-    <div class="text-center text-sm">
+    <div class="text-center text-sm text-blue-900 font-medium mb-3">
       {{ t('start_a_quick_tour_to_learn_how_to_create_an_send_your_first_document') }}
     </div>
     <div class="flex justify-center">
       <label
         for="start_tour_button"
-        class="btn btn-sm btn-warning w-40 mt-2"
+        class="btn btn-sm btn-primary text-white w-full shadow-sm border-transparent hover:bg-primary/90"
         @click="startTour"
       >
         {{ t('start_tour') }}
@@ -376,7 +372,7 @@ export default {
     IconDrag,
     IconLock
   },
-  inject: ['save', 'backgroundColor', 'withPhone', 'withVerification', 'withKba', 'withPayment', 't', 'fieldsDragFieldRef', 'customDragFieldRef', 'baseFetch', 'selectedAreasRef', 'getFieldTypeIndex'],
+  inject: ['save', 'backgroundColor', 'withPhone', 'withVerification', 'withKba', 'withPayment', 't', 'fieldsDragFieldRef', 'customDragFieldRef', 'baseFetch', 'selectedAreasRef'],
   props: {
     fields: {
       type: Array,
@@ -722,7 +718,12 @@ export default {
       setTimeout(() => { hiddenEl.remove() }, 1000)
     },
     startTour () {
-      document.querySelector('app-tour').start()
+      const tourEl = document.querySelector('app-tour')
+      if (tourEl) {
+        tourEl.start()
+      } else {
+        window.location.href = window.location.pathname + '?tour=true'
+      }
     },
     onFieldDragover (e) {
       if (this.fieldsDragFieldRef.value) {

@@ -52,6 +52,22 @@ export default class extends HTMLElement {
 
   destroy () {
     if (this.builderTemplate) this.builderTemplate.fields.shift()
+
+    // Clean up any dropdown-open classes the tour may have added
+    document.querySelectorAll('.dropdown-open').forEach((el) => {
+      el.classList.remove('dropdown-open')
+    })
+
+    // Blur any focused element to close DaisyUI dropdowns
+    if (document.activeElement) document.activeElement.blur()
+
+    // Strip ?tour=true from the URL so it doesn't persist
+    if (window.location.search.includes('tour=true')) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('tour')
+      window.history.replaceState({}, '', url.pathname + url.search)
+    }
+
     if (this.driverObj) this.driverObj.destroy()
   }
 

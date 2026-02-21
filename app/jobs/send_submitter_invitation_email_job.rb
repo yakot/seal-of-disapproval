@@ -27,5 +27,14 @@ class SendSubmitterInvitationEmailJob
 
     submitter.sent_at ||= Time.current
     submitter.save!
+
+    SendDocumentTrackingJob.perform_async(
+      'event_name' => 'document_sent',
+      'submitter_id' => submitter.id,
+      'data' => {
+        'submission_id' => submitter.submission_id,
+        'submitter_id' => submitter.id
+      }
+    )
   end
 end

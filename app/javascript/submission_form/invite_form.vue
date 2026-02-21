@@ -78,11 +78,6 @@ export default {
       type: Array,
       required: true
     },
-    fetchOptions: {
-      type: Object,
-      required: false,
-      default: () => ({})
-    },
     optionalSubmitters: {
       type: Array,
       required: false,
@@ -113,8 +108,7 @@ export default {
 
       return fetch(this.url, {
         method: 'POST',
-        body: new FormData(this.$refs.form),
-        ...this.fetchOptions
+        body: new FormData(this.$refs.form)
       }).then((response) => {
         if (response.status === 200) {
           this.$emit('success')

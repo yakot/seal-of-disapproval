@@ -1,0 +1,75 @@
+<div class="flex min-h-[80vh] items-center justify-center py-12 sm:px-6 lg:px-8">
+  <div class="flex w-full max-w-[1000px] overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-900/5">
+
+    <!-- Left Side: Branding (Hidden on mobile) -->
+    <div class="hidden w-1/2 bg-primary p-12 lg:flex flex-col justify-between relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary to-blue-900 opacity-90"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30"></div>
+
+      <div class="relative z-10">
+        <h2 class="text-3xl font-bold text-white mb-6">GoSign</h2>
+        <div class="space-y-4">
+          <p class="text-blue-100 text-lg leading-relaxed">
+            One more step to verify your email address.
+          </p>
+          <div class="flex items-center space-x-2 text-blue-200 text-sm mt-8">
+            <%= svg_icon('shield_check', class: 'w-5 h-5') %>
+            <span>Secure verification</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative z-10 text-blue-200 text-sm">
+        &copy; <%= Date.today.year %> GoSign. All rights reserved.
+      </div>
+    </div>
+
+    <!-- Right Side: OTP Form -->
+    <div class="w-full lg:w-1/2 p-8 sm:p-12">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900"><%= t('email_verification') %></h2>
+        <p class="mt-2 text-sm text-gray-600">
+          <%= t('we_sent_a_one_time_verification_code_to_your_email_address_please_enter_the_code_below_to_continue') %>
+        </p>
+        <% if @email.present? %>
+          <p class="mt-1 text-sm font-medium text-gray-900"><%= @email %></p>
+        <% end %>
+      </div>
+
+      <% if flash[:alert] %>
+        <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <% if flash[:notice] %>
+        <div class="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-600">
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <%= form_with url: confirm_email_registration_path, method: :post, html: { class: 'space-y-5' } do |f| %>
+        <div class="form-control">
+          <%= f.label :one_time_code, t('email_verification'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+          <%= f.text_field :one_time_code, required: true,
+              class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 text-center text-lg tracking-widest shadow-sm focus:border-primary focus:ring-primary bg-gray-50/50 hover:bg-white transition-colors',
+              placeholder: 'XXX-XXX', autofocus: true, autocomplete: 'one-time-code' %>
+        </div>
+
+        <div class="pt-2">
+          <%= f.submit t('verify'),
+              class: 'flex w-full justify-center rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all transform active:scale-[0.98] cursor-pointer' %>
+        </div>
+      <% end %>
+
+      <div class="mt-6 flex items-center justify-between">
+        <%= button_to t(:re_send_code), resend_code_registration_path,
+            method: :post,
+            class: 'text-sm font-medium text-primary hover:text-primary/80 transition-colors' %>
+
+        <%= link_to t('back'), new_registration_path,
+            class: 'text-sm text-gray-500 hover:text-gray-700 transition-colors' %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="docuseal" lang="<%= I18n.locale %>">
+<html data-theme="<%= current_theme_name %>" data-theme-scope="<%= current_theme_scope %>" lang="<%= I18n.locale %>" class="<%= 'dark' if current_theme_name == 'docuseal_dark' %>">
   <head>
     <%= render 'layouts/head_tags' %>
     <% if Docuseal.enable_pwa? %>
@@ -22,16 +22,17 @@
     <% if params[:modal].present? %>
       <% url_params = Rails.application.routes.recognize_path(params[:modal], method: :get) %>
       <% if url_params[:action] == 'new' %>
-        <open-modal src="<%= url_for(url_params) %>"></open-modal>
+        <open-modal src="<%= params[:modal] %>"></open-modal>
       <% end %>
     <% end %>
     <turbo-frame id="modal"></turbo-frame>
     <turbo-frame id="drawer"></turbo-frame>
     <%= render 'shared/navbar' %>
     <% if flash.present? %><%= render 'shared/flash' %><% end %>
-    <div class="max-w-6xl mx-auto px-4 md:px-2 mb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
       <%= yield %>
     </div>
     <%= render 'shared/body_scripts' %>
+    <attribution-capture data-signed-in="<%= signed_in? %>"></attribution-capture>
   </body>
 </html>

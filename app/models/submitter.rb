@@ -4,27 +4,28 @@
 #
 # Table name: submitters
 #
-#  id            :bigint           not null, primary key
-#  completed_at  :datetime
-#  declined_at   :datetime
-#  email         :string
-#  ip            :string
-#  metadata      :text             not null
-#  name          :string
-#  opened_at     :datetime
-#  phone         :string
-#  preferences   :text             not null
-#  sent_at       :datetime
-#  slug          :string           not null
-#  timezone      :string
-#  ua            :string
-#  uuid          :string           not null
-#  values        :text             not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  account_id    :bigint           not null
-#  external_id   :string
-#  submission_id :bigint           not null
+#  id                :bigint           not null, primary key
+#  completed_at      :datetime
+#  declined_at       :datetime
+#  email             :string
+#  ip                :string
+#  metadata          :text             not null
+#  name              :string
+#  opened_at         :datetime
+#  phone             :string
+#  preferences       :text             not null
+#  reminders_sent_at :text             not null
+#  sent_at           :datetime
+#  slug              :string           not null
+#  timezone          :string
+#  ua                :string
+#  uuid              :string           not null
+#  values            :text             not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  account_id        :bigint           not null
+#  external_id       :string
+#  submission_id     :bigint           not null
 #
 # Indexes
 #
@@ -48,11 +49,13 @@ class Submitter < ApplicationRecord
   attribute :values, :string, default: -> { {} }
   attribute :preferences, :string, default: -> { {} }
   attribute :metadata, :string, default: -> { {} }
+  attribute :reminders_sent_at, :string, default: -> { {} }
   attribute :slug, :string, default: -> { SecureRandom.base58(14) }
 
   serialize :values, coder: JSON
   serialize :preferences, coder: JSON
   serialize :metadata, coder: JSON
+  serialize :reminders_sent_at, coder: JSON
 
   has_many_attached :documents
   has_many_attached :attachments

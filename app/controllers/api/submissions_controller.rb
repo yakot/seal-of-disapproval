@@ -67,6 +67,19 @@ module Api
 
       WebhookUrls.enqueue_events(submissions, 'submission.created')
 
+      submissions.each do |submission|
+        SendDocumentTrackingJob.perform_async(
+          'event_name' => 'document_created',
+          'user_id' => current_user.id,
+          'data' => {
+            'submission_id' => submission.id,
+            'template_name' => submission.template.name,
+            'submitter_count' => submission.submitters.size,
+            'source' => 'api'
+          }
+        )
+      end
+
       Submissions.send_signature_requests(submissions)
 
       submissions.each do |submission|
@@ -188,7 +201,7 @@ module Api
           message: %i[subject body],
           submitters: [[:send_email, :send_sms, :completed_redirect_url, :uuid, :name, :email, :role,
                         :completed, :phone, :application_key, :external_id, :reply_to, :go_to_last,
-                        :require_phone_2fa, :require_email_2fa, :order, :index, :invite_by,
+                        :require_phone_2fa, :require_email_2fa, :order, :invite_by,
                         { metadata: {}, values: {}, roles: [], readonly_fields: [], message: %i[subject body],
                           fields: [:name, :uuid, :default_value, :value, :title, :description,
                                    :readonly, :required, :validation_pattern, :invalid_message,

@@ -13,7 +13,7 @@
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           not null
-#  encrypted_password     :string           not null
+#  encrypted_password     :string
 #  failed_attempts        :integer          default(0), not null
 #  first_name             :string
 #  last_name              :string
@@ -61,6 +61,7 @@ class User < ApplicationRecord
 
   belongs_to :account
   has_one :access_token, dependent: :destroy
+  has_one :attribution_id, dependent: :destroy
   has_many :access_tokens, dependent: :destroy
   has_many :templates, dependent: :destroy, foreign_key: :author_id, inverse_of: :author
   has_many :template_folders, dependent: :destroy, foreign_key: :author_id, inverse_of: :author
@@ -68,7 +69,12 @@ class User < ApplicationRecord
   has_many :encrypted_configs, dependent: :destroy, class_name: 'EncryptedUserConfig'
   has_many :email_messages, dependent: :destroy, foreign_key: :author_id, inverse_of: :author
 
-  devise :two_factor_authenticatable, :recoverable, :rememberable, :validatable, :trackable, :lockable
+  has_many :identities, dependent: :destroy
+
+  devise :two_factor_authenticatable, :recoverable, :rememberable, :validatable, :trackable, :lockable,
+         :omniauthable, omniauth_providers: %i[google_oauth2 microsoft_graph]
+
+  attr_accessor :skip_password_validation
 
   attribute :role, :string, default: ADMIN_ROLE
   attribute :uuid, :string, default: -> { SecureRandom.uuid }
@@ -85,6 +91,10 @@ class User < ApplicationRecord
 
   def active_for_authentication?
     super && !archived_at? && !account.archived_at?
+  end
+
+  def authenticatable_salt
+    encrypted_password.present? ? super : "#{id}-#{created_at}"
   end
 
   def remember_me
@@ -119,5 +129,65 @@ class User < ApplicationRecord
     else
       email
     end
+  end
+
+  def has_oauth_provider?(provider)
+    identities.exists?(provider: provider.to_s)
+  end
+
+  def self.from_omniauth(auth, account: nil)
+    identity = Identity.find_by(provider: auth.provider, uid: auth.uid)
+
+    if identity
+      identity.update(
+        email: auth.info.email,
+        name: auth.info.name,
+        first_name: auth.info.first_name,
+        last_name: auth.info.last_name,
+        image_url: auth.info.image,
+        access_token: auth.credentials&.token,
+        expires_at: auth.credentials&.expires_at ? Time.at(auth.credentials.expires_at) : nil,
+        refresh_token: auth.credentials&.refresh_token
+      )
+      return identity.user
+    end
+
+    email = auth.info.email&.downcase
+    user = User.find_by(email:) if email.present?
+
+    if user.nil?
+      user = User.new(
+        email:,
+        first_name: auth.info.first_name || auth.info.name&.split&.first,
+        last_name: auth.info.last_name || auth.info.name&.split&.last,
+        account:,
+        uuid: SecureRandom.uuid
+      )
+      user.skip_password_validation = true
+      user.save!
+    end
+
+    user.identities.create!(
+      provider: auth.provider,
+      uid: auth.uid,
+      email: auth.info.email,
+      name: auth.info.name,
+      first_name: auth.info.first_name,
+      last_name: auth.info.last_name,
+      image_url: auth.info.image,
+      access_token: auth.credentials&.token,
+      expires_at: auth.credentials&.expires_at ? Time.at(auth.credentials.expires_at) : nil,
+      refresh_token: auth.credentials&.refresh_token
+    )
+
+    user
+  end
+
+  protected
+
+  def password_required?
+    return false if skip_password_validation
+
+    identities.empty? && super
   end
 end

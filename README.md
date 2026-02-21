@@ -1,107 +1,278 @@
 <h1 align="center" style="border-bottom: none">
   <div>
-    <a href="https://www.docuseal.com">
-      <img  alt="DocuSeal" src="https://github.com/user-attachments/assets/38b45682-ffa4-4919-abde-d2d422325c44" width="80" />
+    <a href="https://foundingdev.com/?utm_source=github&utm_medium=referral&utm_campaign=open_source_repo">
       <br>
     </a>
-    DocuSeal
+    FoundingDev
   </div>
 </h1>
 <h3 align="center">
-  Open source document filling and signing
+  Open Source Document Signing & E-Signature Platform
 </h3>
+
 <p align="center">
-  <a href="https://hub.docker.com/r/docuseal/docuseal">
-    <img alt="Docker releases" src="https://img.shields.io/docker/v/docuseal/docuseal">
-  </a>
-  <a href="https://discord.gg/qygYCDGck9">
-    <img src="https://img.shields.io/discord/1125112641170448454?logo=discord"/>
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=docusealco">
-    <img src="https://img.shields.io/twitter/follow/docusealco?style=social" alt="Follow @docusealco" />
-  </a>
+  <strong>Build your own SaaS and save thousands of dollars</strong>
 </p>
-<p>
-DocuSeal is an open source platform that provides secure and efficient digital document signing and processing. Create PDF forms to have them filled and signed online on any device with an easy-to-use, mobile-optimized web tool.
-</p>
-<h2 align="center">
-  <a href="https://demo.docuseal.tech">✨ Live Demo</a>
-  <span>|</span>
-  <a href="https://docuseal.com/sign_up">☁️ Try in Cloud</a>
-</h2>
 
-[![Demo](https://github.com/docusealco/docuseal/assets/5418788/d8703ea3-361a-423f-8bfe-eff1bd9dbe14)](https://demo.docuseal.tech)
+## About FoundingDev
 
-## Features
+**FoundingDev's mission is to empower companies to build their own SaaS products and save thousands of dollars** by providing production-ready, open-source alternatives to expensive commercial solutions. Instead of paying premium subscription fees to third-party services, companies can deploy, customize, and control their own infrastructure.
+
+[GoSign](https://gosign.work/?utm_source=github&utm_medium=readme) is a prime example of this philosophy - a fully-featured document signing platform that you can self-host and customize to your exact needs.
+
+## About This Project
+
+[GoSign](https://gosign.work/?utm_source=github&utm_medium=readme) is forked from [DocuSeal](https://github.com/docusealco/docuseal), an excellent open-source document signing platform. We've significantly extended and enhanced the original codebase with enterprise-grade features, transforming it into a production-ready SaaS platform.
+
+### What We've Built
+
+Since forking from DocuSeal, we've added over **1,900+ commits** of enhancements and new features, including:
+
+#### 💳 Complete Stripe Billing & Subscription System
+- Full Stripe Checkout integration with promotion codes
+- Customer Portal for self-service subscription management
+- Webhook handling for all subscription lifecycle events
+- Flexible entitlement system supporting both Stripe and manual grants
+- Feature restrictions and paywalls based on subscription status
+- Idempotent event processing to prevent duplicate charges
+
+#### 📊 Comprehensive Analytics & Tracking
+- **Server-side tracking** for Google Analytics 4, Meta (Facebook) Conversions API, Google Ads, X (Twitter), and Customer.io
+- **Background job processing** for reliable event delivery
+- **UTM attribution tracking** across the entire user journey
+- **Click ID capture** (gclid, fbclid, twclid) for accurate conversion attribution
+- **PostHog integration** for product analytics
+- Full funnel tracking: signup → checkout → subscription → document events
+
+#### 🔐 OAuth/SSO Authentication
+- Google OAuth2 integration
+- Microsoft OAuth integration
+- Password-optional authentication for OAuth users
+- Encrypted token storage
+- Automatic account creation in multi-tenant mode
+
+#### 🎯 Multi-Tenant SaaS Features
+- Self-service registration with OTP email verification
+- Per-account subscription and billing management
+- Feature restrictions based on subscription tier
+- Account-level configuration and branding
+- Testing mode for development without Stripe
+
+#### ⏰ Automated Email Reminders
+- Configurable reminder schedules (up to 3 reminders per document)
+- Flexible intervals from 1 hour to 30 days
+- Automatic cascade logic (reminder 2 after reminder 1, etc.)
+- Self-scheduling background jobs for reliability
+- Per-submitter tracking to prevent duplicate sends
+
+#### 🎨 UI/UX Improvements
+- Dark mode support with user preference persistence
+- Revamped login and signup pages
+- Improved templates and submissions pages
+- Redesigned settings interface with conditional visibility
+- Better document management UI
+- Upgrade prompts for non-subscribed users
+
+#### 💬 Live Chat & Support
+- Intercom widget integration
+- Automatic user identification
+- Available across all pages
+
+#### 📄 Enhanced Document Features
+- DOCX/Office document support with automatic PDF conversion
+- Bulk submission operations
+- Improved export functionality
+- Better document processing pipeline
+
+#### 🛠 Development & Deployment
+- Docker development environment
+- Comprehensive `.env.example` with 200+ configuration options
+- Redis integration for background jobs
+- Auto-deploy with zero downtime
+- Conditional storage configuration (local/S3)
+
+#### 🔒 Security & Performance
+- Content Security Policy for all third-party scripts
+- Encrypted OAuth tokens
+- Webhook signature verification
+- Billing cache (2-minute TTL)
+- Rate limiting
+- Transaction-safe billing operations
+
+## Core Features (Inherited from DocuSeal)
+
 - PDF form fields builder (WYSIWYG)
-- 12 field types available (Signature, Date, File, Checkbox etc.)
+- 12 field types (Signature, Date, File, Checkbox, etc.)
 - Multiple submitters per document
 - Automated emails via SMTP
-- Files storage on disk or AWS S3, Google Storage, Azure Cloud
-- Automatic PDF eSignature
-- PDF signature verification
+- Files storage on disk, AWS S3, Google Cloud Storage, or Azure
+- Automatic PDF eSignature with verification
 - Users management
-- Mobile-optimized
-- 7 UI languages with signing available in 14 languages
+- Mobile-optimized interface
+- Multi-language support (7 UI languages, 14 signing languages)
 - API and Webhooks for integrations
-- Easy to deploy in minutes
+- Easy deployment in minutes
 
-## Pro Features
-- Company logo and white-label
-- User roles
-- Automated reminders
-- Invitation and identify verification via SMS
-- Conditional fields and formulas
-- Bulk send with CSV, XLSX spreadsheet import
-- SSO / SAML
-- Template creation with HTML API ([Guide](https://www.docuseal.com/guides/create-pdf-document-fillable-form-with-html-api))
-- Template creation with PDF or DOCX and field tags API ([Guide](https://www.docuseal.com/guides/use-embedded-text-field-tags-in-the-pdf-to-create-a-fillable-form))
-- Embedded signing form ([React](https://github.com/docusealco/docuseal-react), [Vue](https://github.com/docusealco/docuseal-vue), [Angular](https://github.com/docusealco/docuseal-angular) or [JavaScript](https://www.docuseal.com/docs/embedded))
-- Embedded document form builder ([React](https://github.com/docusealco/docuseal-react), [Vue](https://github.com/docusealco/docuseal-vue), [Angular](https://github.com/docusealco/docuseal-angular) or [JavaScript](https://www.docuseal.com/docs/embedded))
-- [Learn more](https://www.docuseal.com/pricing)
+## Quick Start
 
-## Deploy
-
-|Heroku|Railway|
-|:--:|:---:|
-| [<img alt="Deploy on Heroku" src="https://www.herokucdn.com/deploy/button.svg" height="40">](https://heroku.com/deploy?template=https://github.com/docusealco/docuseal-heroku) | [<img alt="Deploy on Railway" src="https://railway.app/button.svg" height="40">](https://railway.app/template/IGoDnc?referralCode=ruU7JR)|
-|**DigitalOcean**|**Render**|
-| [<img alt="Deploy on DigitalOcean" src="https://www.deploytodo.com/do-btn-blue.svg" height="40">](https://cloud.digitalocean.com/apps/new?repo=https://github.com/docusealco/docuseal-digitalocean/tree/master&refcode=421d50f53990) | [<img alt="Deploy to Render" src="https://render.com/images/deploy-to-render-button.svg" height="40">](https://render.com/deploy?repo=https://github.com/docusealco/docuseal-render)
-
-#### Docker
+### Docker
 
 ```sh
-docker run --name docuseal -p 3000:3000 -v.:/data docuseal/docuseal
+docker run --name foundingsign -p 3000:3000 -v.:/data foundingsign/foundingsign
 ```
 
-By default DocuSeal docker container uses an SQLite database to store data and configurations. Alternatively, it is possible use PostgreSQL or MySQL databases by specifying the `DATABASE_URL` env variable.
+### Docker Compose
 
-#### Docker Compose
-
-Download docker-compose.yml into your private server:
 ```sh
-curl https://raw.githubusercontent.com/docusealco/docuseal/master/docker-compose.yml > docker-compose.yml
+curl https://raw.githubusercontent.com/foundingdev/founding-sign/main/docker-compose.yml > docker-compose.yml
+docker compose up
 ```
 
-Run the app under a custom domain over https using docker compose (make sure your DNS points to the server to automatically issue ssl certs with Caddy):
+### Configuration
+
+Copy `.env.example` to `.env` and configure your environment:
+
 ```sh
-sudo HOST=your-domain-name.com docker compose up
+cp .env.example .env
 ```
 
-## For Businesses
-### Integrate seamless document signing into your web or mobile apps with DocuSeal
+Key configurations:
+- **Database**: PostgreSQL or MySQL via `DATABASE_URL`
+- **Redis**: Required for background jobs
+- **Stripe**: For billing and subscriptions
+- **SMTP**: For email delivery
+- **Storage**: S3, Google Cloud Storage, or Azure
+- **OAuth**: Google and Microsoft SSO
+- **Analytics**: GA4, Meta, Google Ads, Twitter, Customer.io
 
-At DocuSeal we have expertise and technologies to make documents creation, filling, signing and processing seamlessly integrated with your product. We specialize in working with various industries, including **Banking, Healthcare, Transport, Real Estate, eCommerce, KYC, CRM, and other software products** that require bulk document signing. By leveraging DocuSeal, we can assist in reducing the overall cost of developing and processing electronic documents while ensuring security and compliance with local electronic document laws.
+See `.env.example` for comprehensive documentation of all 200+ configuration options.
 
-[Book a Meeting](https://www.docuseal.com/contact)
+## Feature Restrictions
+
+Control which features require a subscription by setting `RESTRICTED_FEATURES`:
+
+```sh
+# Restrict all premium features
+RESTRICTED_FEATURES=api,sso,webhooks,email,storage,notifications,esign,personalization,users
+
+# Or pick specific features
+RESTRICTED_FEATURES=api,webhooks,sso
+
+# No restrictions (allow everything for free)
+RESTRICTED_FEATURES=
+```
+
+## Tech Stack
+
+- **Backend**: Ruby on Rails 7.1
+- **Database**: PostgreSQL (production), SQLite (development)
+- **Background Jobs**: Sidekiq with Redis
+- **Frontend**: Hotwire (Turbo + Stimulus), TailwindCSS
+- **Payments**: Stripe
+- **Storage**: AWS S3, Google Cloud Storage, Azure Blob Storage
+- **Analytics**: GA4, Meta CAPI, Google Ads, Customer.io, PostHog
+- **Authentication**: Devise + OmniAuth (Google, Microsoft)
+- **PDF Processing**: Prawn, HexaPDF
+
+## Why Self-Host?
+
+### Cost Savings
+- **DocuSign**: $25-$100/user/month
+- **PandaDoc**: $19-$49/user/month
+- **HelloSign**: $15-$40/user/month
+- **FoundingSign**: $0 (self-hosted) + infrastructure costs (~$20-50/month for small teams)
+
+**Potential savings: $1,200 - $4,800 per year for a 5-person team**
+
+### Benefits
+- Full data ownership and control
+- No per-user pricing
+- Unlimited documents and signatures
+- Custom branding and white-label
+- HIPAA/GDPR compliance control
+- No vendor lock-in
+- Full API access without rate limits
+
+## Development
+
+```sh
+# Install dependencies
+bundle install
+yarn install
+
+# Setup database
+rails db:setup
+
+# Start Redis
+redis-server
+
+# Start Sidekiq
+bundle exec sidekiq
+
+# Start Rails server
+rails server
+```
+
+Visit `http://localhost:3000`
+
+## Deployment
+
+FoundingSign can be deployed to any platform that supports Ruby on Rails:
+
+- Docker (recommended)
+- Heroku
+- Railway
+- Render
+- DigitalOcean
+- AWS (ECS, EC2, Elastic Beanstalk)
+- Google Cloud Run
+- Azure App Service
+
+See our deployment guides for platform-specific instructions.
+
+## API & Integrations
+
+FoundingSign provides a comprehensive REST API for:
+- Creating and managing templates
+- Sending documents for signature
+- Retrieving submission status
+- Downloading completed documents
+- Webhook notifications for all events
+
+API documentation: `/api/docs` (when running)
+
+## Contributing
+
+We welcome contributions! This project is licensed under the AGPLv3, which means:
+
+1. You can use it freely for personal or commercial purposes
+2. If you distribute a modified version over a network, you must make your source code available
+3. Any modifications must also be licensed under AGPLv3
+
+To contribute:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
-Distributed under the AGPLv3 License. See [LICENSE](https://github.com/docusealco/docuseal/blob/master/LICENSE) for more information.
-Unless otherwise noted, all files © 2023 DocuSeal LLC.
+Distributed under the AGPLv3 License. See [LICENSE](LICENSE) for more information.
 
-## Tools
+This project is a fork of [DocuSeal](https://github.com/docusealco/docuseal) (© 2023 DocuSeal LLC) with significant enhancements and modifications by the FoundingDev team.
 
-- [Signature Maker](https://www.docuseal.com/online-signature)
-- [Sign Document Online](https://www.docuseal.com/sign-documents-online)
-- [Fill PDF Online](https://www.docuseal.com/fill-pdf)
+## Support
+
+- **GitHub Issues**: For bug reports and feature requests
+- **Discussions**: For questions and community support
+- **Website**: [foundingdev.com](https://foundingdev.com/?utm_source=github&utm_medium=referral&utm_campaign=open_source_repo)
+
+## Acknowledgments
+
+Special thanks to the [DocuSeal](https://github.com/docusealco/docuseal) team for creating the excellent foundation that this project is built upon. Their open-source commitment made this possible.
+
+---
+
+**Built with ❤️ by FoundingDev**
+
+*Empowering companies to build their own SaaS and save thousands of dollars*

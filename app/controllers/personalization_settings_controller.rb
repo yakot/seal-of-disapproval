@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class PersonalizationSettingsController < ApplicationController
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to settings_billing_index_path, alert: I18n.t('subscription_required_for_personalization')
+  end
+
   ALLOWED_KEYS = [
     AccountConfig::FORM_COMPLETED_BUTTON_KEY,
     AccountConfig::SUBMITTER_INVITATION_EMAIL_KEY,
@@ -13,6 +17,7 @@ class PersonalizationSettingsController < ApplicationController
 
   InvalidKey = Class.new(StandardError)
 
+  before_action :authorize_feature_access
   before_action :load_and_authorize_account_config, only: :create
 
   def show
@@ -33,6 +38,24 @@ class PersonalizationSettingsController < ApplicationController
     end
 
     redirect_back(fallback_location: settings_personalization_path, notice: I18n.t('settings_have_been_saved'))
+  end
+
+  def upload_logo
+    authorize!(:update, current_account)
+
+    if params[:logo].present?
+      current_account.logo.attach(params[:logo])
+      redirect_to settings_personalization_path, notice: I18n.t('logo_uploaded_successfully')
+    else
+      redirect_to settings_personalization_path, alert: I18n.t('please_select_a_file')
+    end
+  end
+
+  def delete_logo
+    authorize!(:update, current_account)
+
+    current_account.logo.purge if current_account.logo.attached?
+    redirect_to settings_personalization_path, notice: I18n.t('logo_deleted_successfully')
   end
 
   private
@@ -64,5 +87,9 @@ class PersonalizationSettingsController < ApplicationController
     end
 
     attrs
+  end
+
+  def authorize_feature_access
+    authorize!(:access, :settings_personalization)
   end
 end

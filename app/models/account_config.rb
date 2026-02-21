@@ -56,6 +56,7 @@ class AccountConfig < ApplicationRecord
   DOCUMENT_FILENAME_FORMAT_KEY = 'document_filename_format'
   TEMPLATE_CUSTOM_FIELDS_KEY = 'template_custom_fields'
   POLICY_LINKS_KEY = 'policy_links'
+  THEME_KEY = 'theme'
 
   DEFAULT_VALUES = {
     SUBMITTER_INVITATION_EMAIL_KEY => lambda {

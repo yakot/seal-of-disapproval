@@ -91,6 +91,17 @@ class StartFormController < ApplicationController
   def enqueue_new_submitter_jobs(submitter)
     WebhookUrls.enqueue_events(submitter.submission, 'submission.created')
 
+    SendDocumentTrackingJob.perform_async(
+      'event_name' => 'document_created',
+      'submission_id' => submitter.submission_id,
+      'data' => {
+        'submission_id' => submitter.submission_id,
+        'template_name' => submitter.submission.template.name,
+        'submitter_count' => submitter.submission.submitters.size,
+        'source' => 'link'
+      }
+    )
+
     SearchEntries.enqueue_reindex(submitter)
 
     return unless submitter.submission.expire_at?

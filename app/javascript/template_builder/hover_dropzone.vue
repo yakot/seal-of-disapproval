@@ -78,7 +78,7 @@ export default {
     acceptFileTypes: {
       type: String,
       required: false,
-      default: 'image/*, application/pdf, application/zip'
+      default: 'image/*, application/pdf, application/zip, .docx, .doc, .odt, .rtf'
     }
   },
   emits: ['add', 'replace', 'replace-and-clone', 'error'],

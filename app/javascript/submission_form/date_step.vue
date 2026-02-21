@@ -42,7 +42,7 @@
       <MarkdownContent :string="field.description" />
     </div>
     <AppearsOn :field="field" />
-    <div class="text-center flex">
+    <div class="text-center">
       <input
         :id="field.uuid"
         ref="input"

@@ -4,18 +4,29 @@
 #
 # Table name: accounts
 #
-#  id          :bigint           not null, primary key
-#  archived_at :datetime
-#  locale      :string           not null
-#  name        :string           not null
-#  timezone    :string           not null
-#  uuid        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id                     :bigint           not null, primary key
+#  archived_at            :datetime
+#  locale                 :string           not null
+#  name                   :string           not null
+#  timezone               :string           not null
+#  uuid                   :string           not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  entitlement_expires_at :datetime
+#  entitlement_reason     :text
+#  entitlement_source     :string           default("stripe"), not null
+#  stripe_customer_id     :string
+#  stripe_subscription_id :string
+#  granted_by_admin_id    :bigint
 #
 # Indexes
 #
-#  index_accounts_on_uuid  (uuid) UNIQUE
+#  index_accounts_on_stripe_customer_id  (stripe_customer_id) UNIQUE
+#  index_accounts_on_uuid                (uuid) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (granted_by_admin_id => users.id) ON DELETE => nullify
 #
 class Account < ApplicationRecord
   attribute :uuid, :string, default: -> { SecureRandom.uuid }
@@ -51,6 +62,10 @@ class Account < ApplicationRecord
   has_many :active_users, -> { active }, dependent: :destroy,
                                          inverse_of: :account, class_name: 'User'
 
+  belongs_to :granted_by_admin, class_name: 'User', optional: true
+
+  has_one_attached :logo
+
   attribute :timezone, :string, default: 'UTC'
   attribute :locale, :string, default: 'en-US'
 
@@ -58,6 +73,16 @@ class Account < ApplicationRecord
 
   def testing?
     linked_account_account&.testing?
+  end
+
+  def subscribed?
+    return linked_account_account&.account&.subscribed? || false if testing?
+
+    if entitlement_source == 'stripe'
+      stripe_subscription_id.present?
+    else
+      entitlement_expires_at.nil? || entitlement_expires_at > Time.current
+    end
   end
 
   def tz_info

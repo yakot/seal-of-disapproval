@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class ApiSettingsController < ApplicationController
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to settings_billing_index_path, alert: I18n.t('subscription_required_for_api')
+  end
+
   def index
     authorize!(:read, current_user.access_token)
   end

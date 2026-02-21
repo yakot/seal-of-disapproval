@@ -10,7 +10,7 @@
 #  name                :text
 #  preferences         :text             not null
 #  slug                :string           not null
-#  source              :text             not null
+#  source              :string           not null
 #  submitters_order    :string           not null
 #  template_fields     :text
 #  template_schema     :text
@@ -107,6 +107,14 @@ class Submission < ApplicationRecord
 
   def expired?
     expire_at && expire_at <= Time.current
+  end
+
+  def completed?
+    if submitters.loaded?
+      submitters.all?(&:completed_at?)
+    else
+      submitters.where(completed_at: nil).empty?
+    end
   end
 
   def schema_documents

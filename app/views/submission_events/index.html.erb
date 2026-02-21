@@ -1,4 +1,4 @@
-<% event_colors = %w[bg-red-200 bg-sky-200 bg-emerald-200 bg-yellow-200 bg-purple-200 bg-pink-200 bg-cyan-200 bg-orange-200 bg-lime-200 bg-indigo-200] %>
+<% event_colors = %w[bg-primary/10 bg-secondary/10 bg-accent/10 bg-primary/20 bg-secondary/20 bg-accent/20 bg-primary/30 bg-secondary/30 bg-accent/30 bg-neutral/10] %>
 <% submitters_uuids = (@submission.template_submitters || @submission.template.submitters).pluck('uuid') %>
 <%= render 'shared/turbo_modal_large', title: t('event_log') do %>
   <div class="pl-8 pr-4 py-4">

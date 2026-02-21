@@ -127,12 +127,6 @@
       type="hidden"
       :name="`values[${field.uuid}]`"
     >
-    <input
-      v-if="isTouchAttachment"
-      :value="touchAttachmentUuid"
-      type="hidden"
-      name="touch_attachment_uuid"
-    >
     <img
       v-if="modelValue || computedPreviousValue"
       :src="attachmentsIndex[modelValue || computedPreviousValue].url"
@@ -316,7 +310,7 @@ import FileDropzone from './dropzone'
 import MarkdownContent from './markdown_content'
 import { v4 } from 'uuid'
 
-let fontLoadPromise = null
+let isFontLoaded = false
 
 const scale = 3
 
@@ -337,10 +331,6 @@ export default {
   inject: ['baseUrl', 't'],
   props: {
     field: {
-      type: Object,
-      required: true
-    },
-    values: {
       type: Object,
       required: true
     },
@@ -398,11 +388,6 @@ export default {
       required: false,
       default: ''
     },
-    touchAttachmentUuid: {
-      type: String,
-      required: false,
-      default: ''
-    },
     reason: {
       type: String,
       required: false,
@@ -414,14 +399,13 @@ export default {
       default: ''
     }
   },
-  emits: ['attached', 'update:model-value', 'start', 'minimize', 'update:reason', 'touch-attachment'],
+  emits: ['attached', 'update:model-value', 'start', 'minimize', 'update:reason'],
   data () {
     return {
       isSignatureStarted: false,
       isShowQr: false,
       isOtherReason: false,
       isUsePreviousValue: true,
-      isTouchAttachment: false,
       isTextSignature: this.field.preferences?.format === 'typed' || this.field.preferences?.format === 'typed_or_upload',
       uploadImageInputKey: Math.random().toString()
     }
@@ -482,14 +466,6 @@ export default {
           if (entry.isIntersecting) {
             this.setCanvasSize()
 
-            if (this.isTextSignature) {
-              this.$nextTick(() => {
-                if (this.$refs.textInput) {
-                  this.initTypedSignature()
-                }
-              })
-            }
-
             this.intersectionObserver?.disconnect()
           }
         })
@@ -512,10 +488,6 @@ export default {
       })
 
       this.resizeObserver.observe(this.$refs.canvas.parentNode)
-
-      if (this.isTextSignature) {
-        this.loadFont()
-      }
     }
   },
   beforeUnmount () {
@@ -542,7 +514,7 @@ export default {
     redrawCanvas (oldWidth, oldHeight) {
       const canvas = this.$refs.canvas
 
-      if (this.pad && !this.isTextSignature && !this.pad.isEmpty() && oldWidth > 0 && oldHeight > 0) {
+      if (this.pad && !this.isTextSignature && !this.pad.isEmpty()) {
         const sx = canvas.width / oldWidth
         const sy = canvas.height / oldHeight
 
@@ -553,7 +525,7 @@ export default {
 
         this.pad.fromData(scaledData)
       } else if (this.isTextSignature && this.$refs.textInput) {
-        this.updateWrittenSignature({ target: this.$refs.textInput })
+        this.updateWrittenSignature({ target: { value: this.$refs.textInput.value } })
       }
     },
     remove () {
@@ -563,17 +535,17 @@ export default {
       this.isSignatureStarted = false
     },
     loadFont () {
-      if (!fontLoadPromise) {
+      if (!isFontLoaded) {
         const font = new FontFace('Dancing Script', `url(${this.baseUrl}/fonts/DancingScript-Regular.otf) format("opentype")`)
 
-        fontLoadPromise = font.load().then((loadedFont) => {
+        font.load().then((loadedFont) => {
           document.fonts.add(loadedFont)
+
+          isFontLoaded = true
         }).catch((error) => {
           console.error('Font loading failed:', error)
         })
       }
-
-      return fontLoadPromise
     },
     showQr () {
       this.isShowQr = true
@@ -673,27 +645,12 @@ export default {
 
       if (this.isTextSignature) {
         this.$nextTick(() => {
-          if (this.$refs.textInput) {
-            if (!this.submitter.name) {
-              this.$refs.textInput.focus()
-            }
+          this.$refs.textInput.focus()
 
-            this.initTypedSignature()
+          this.loadFont()
 
-            this.$emit('start')
-          }
+          this.$emit('start')
         })
-      }
-    },
-    async initTypedSignature () {
-      if (this.submitter.name) {
-        this.$refs.textInput.value = this.submitter.name
-      }
-
-      await this.loadFont()
-
-      if (this.$refs.textInput.value) {
-        this.updateWrittenSignature({ target: this.$refs.textInput })
       }
     },
     drawImage (event) {
@@ -774,13 +731,6 @@ export default {
     },
     async submit () {
       if (this.modelValue || this.computedPreviousValue) {
-        if (this.touchAttachmentUuid && this.computedPreviousValue === this.touchAttachmentUuid && !Object.values(this.values).includes(this.touchAttachmentUuid)) {
-          this.isTouchAttachment = true
-          this.$emit('touch-attachment', this.touchAttachmentUuid)
-        } else {
-          this.isTouchAttachment = false
-        }
-
         if (this.computedPreviousValue) {
           this.$emit('update:model-value', this.computedPreviousValue)
         }

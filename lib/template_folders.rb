@@ -20,9 +20,7 @@ module TemplateFolders
   def search(folders, keyword)
     return folders if keyword.blank?
 
-    sanitized = ActiveRecord::Base.sanitize_sql_like(keyword.downcase)
-
-    folders.where(TemplateFolder.arel_table[:name].lower.matches("%#{sanitized}%"))
+    folders.where(TemplateFolder.arel_table[:name].lower.matches("%#{keyword.downcase}%"))
   end
 
   def filter_active_folders(template_folders, templates)

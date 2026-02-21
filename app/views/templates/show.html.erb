@@ -3,23 +3,33 @@
 <% is_show_tabs = @pagy.pages > 1 || params[:q].present? || params[:status].present? || filter_params.present? %>
 <% if @pagy.count.nil? || !@pagy.count.zero? || params[:q].present? || params[:status].present? || filter_params.present? %>
   <div class="<%= is_show_tabs ? 'mb-4' : 'mb-6' %>">
-    <div class="flex justify-between items-center md:items-end">
-      <div>
-        <h2 class="text-3xl font-bold md:block <%= 'hidden' if params[:q].present? %>">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <h2 class="text-xl font-bold text-base-content/80 <%= 'hidden' if params[:q].present? %>">
           <%= t('submissions') %>
         </h2>
+        <% if @submissions.present? %>
+          <div class="flex items-center gap-2 px-3 py-1 bg-base-200 rounded-full">
+            <input type="checkbox" id="select-all-submissions" class="checkbox checkbox-xs checkbox-primary" />
+            <label for="select-all-submissions" class="text-xs font-medium cursor-pointer select-none"><%= t('select_all') %></label>
+          </div>
+        <% end %>
       </div>
-      <div class="flex justify-end space-x-2">
+      
+      <div class="flex items-center gap-2">
         <% if params[:q].present? || params[:status].present? || filter_params.present? || @pagy.pages > 1 %>
           <%= render 'shared/search_input', title_selector: 'h2' %>
         <% end %>
-        <%= link_to new_template_submissions_export_path(@template, params.permit(:q, *Submissions::Filter::ALLOWED_PARAMS)), class: 'hidden md:flex btn btn-ghost text-base', data: { turbo_frame: 'modal' } do %>
-          <%= svg_icon('download', class: 'w-6 h-6 stroke-2') %>
-          <span><%= t('export') %></span>
+        
+        <%= link_to new_template_submissions_export_path(@template, params.permit(:q, *Submissions::Filter::ALLOWED_PARAMS)), id: 'export-button', class: 'hidden md:inline-flex btn btn-sm btn-ghost gap-2', data: { turbo_frame: 'modal' } do %>
+          <%= svg_icon('download', class: 'w-4 h-4') %>
+          <span id="export-text"><%= t('export') %></span>
+          <span id="export-count" class="badge badge-sm badge-primary hidden">0</span>
         <% end %>
+
         <% if !@template.archived_at? && can?(:create, Submission) %>
-          <%= link_to new_template_submission_path(@template), id: 'add_recipients_button', class: 'white-button !border', data: { turbo_frame: 'modal' } do %>
-            <%= svg_icon('plus', class: 'w-6 h-6 stroke-2') %>
+          <%= link_to new_template_submission_path(@template), id: 'add_recipients_button', class: 'btn btn-sm btn-primary gap-2', data: { turbo_frame: 'modal' } do %>
+            <%= svg_icon('plus', class: 'w-4 h-4') %>
             <%= t('add_recipients_html') %>
           <% end %>
         <% end %>
@@ -27,44 +37,40 @@
     </div>
   </div>
 <% end %>
+
 <% if is_show_tabs %>
-  <div class="flex items-center flex-col md:flex-row md:flex-wrap gap-2 mb-4">
-    <div class="flex items-center md:items-end flex-col md:flex-row gap-2 w-full md:w-fit">
-      <a href="<%= url_for(params: request.query_parameters.except('status')) %>" class="<%= params[:status].blank? ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-700">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('list', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('all') %></span>
-        </div>
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+    <div class="join w-full md:w-auto">
+      <a href="<%= url_for(params.to_unsafe_h.except(:status)) %>" class="btn btn-sm join-item <%= params[:status].blank? ? 'btn-active btn-neutral' : 'btn-ghost' %>">
+        <%= svg_icon('list', class: 'w-4 h-4') %>
+        <%= t('all') %>
         <% unless can?(:manage, :countless) %>
-          <div class="badge badge-neutral badge-outline font-medium">
+          <span class="badge badge-sm <%= params[:status].blank? ? 'badge-ghost' : 'badge-neutral' %>">
             <%= params[:status].blank? && filter_params.blank? ? @pagy.count : @base_submissions.unscope(:group, :order).select(:id).distinct.count %>
-          </div>
+          </span>
         <% end %>
       </a>
-      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'pending')) %>" class="<%= params[:status] == 'pending' ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-700">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('clock', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('pending') %></span>
-        </div>
+      <a href="<%= url_for(params.to_unsafe_h.merge(status: :pending)) %>" class="btn btn-sm join-item <%= params[:status] == 'pending' ? 'btn-active btn-neutral' : 'btn-ghost' %>">
+        <%= svg_icon('clock', class: 'w-4 h-4') %>
+        <%= t('pending') %>
         <% unless can?(:manage, :countless) %>
-          <div class="badge badge-neutral badge-outline font-medium">
+          <span class="badge badge-sm <%= params[:status] == 'pending' ? 'badge-ghost' : 'badge-neutral' %>">
             <%= params[:status] == 'pending' && filter_params.blank? ? @pagy.count : @base_submissions.pending.unscope(:group, :order).select(:id).distinct.count %>
-          </div>
+          </span>
         <% end %>
       </a>
-      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'completed')) %>" class="<%= params[:status] == 'completed' ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-700">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('circle_check', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('completed') %></span>
-        </div>
+      <a href="<%= url_for(params.to_unsafe_h.merge(status: :completed)) %>" class="btn btn-sm join-item <%= params[:status] == 'completed' ? 'btn-active btn-neutral' : 'btn-ghost' %>">
+        <%= svg_icon('circle_check', class: 'w-4 h-4') %>
+        <%= t('completed') %>
         <% unless can?(:manage, :countless) %>
-          <div class="badge badge-neutral badge-outline font-medium">
+          <span class="badge badge-sm <%= params[:status] == 'completed' ? 'badge-ghost' : 'badge-neutral' %>">
             <%= params[:status] == 'completed' && filter_params.blank? ? @pagy.count : @base_submissions.completed.unscope(:group, :order).select(:id).distinct.count %>
-          </div>
+          </span>
         <% end %>
       </a>
     </div>
-    <div class="flex items-end flex-col md:flex-row gap-2 w-full md:w-fit">
+
+    <div class="flex items-center gap-2 w-full md:w-auto">
       <%= render 'submissions_filters/applied_filters', filter_params: %>
       <%= render 'submissions_filters/filter_button', filter_params: %>
       <% unless @template.archived_at? %>
@@ -73,57 +79,73 @@
     </div>
   </div>
 <% end %>
+
 <% if @submissions.present? %>
-  <div class="space-y-4">
-    <%= render partial: 'submission', collection: @submissions, locals: { template: @template } %>
-  </div>
+  <submission-selector>
+    <div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
+      <div class="divide-y divide-base-200">
+        <%= render partial: 'submission', collection: @submissions, locals: { template: @template } %>
+      </div>
+    </div>
+  </submission-selector>
 <% else %>
-  <div class="card bg-base-200">
-    <div class="card-body text-center px-4 py-16">
-      <div class="max-w-lg mx-auto">
-        <p class="text-3xl font-bold text-base-content">
+  <div class="card bg-base-100 border border-base-200 shadow-sm">
+    <div class="card-body text-center py-16">
+      <div class="max-w-md mx-auto flex flex-col items-center">
+        <div class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mb-6">
+          <%= svg_icon('inbox', class: 'w-8 h-8 text-base-content/40') %>
+        </div>
+        
+        <h3 class="text-xl font-bold text-base-content mb-2">
           <%= t('there_are_no_submissions') %>
-        </p>
+        </h3>
+        
         <% if @template.archived_at.blank? && params[:q].blank? && filter_params.blank? %>
-          <div class="mt-4">
-            <p><%= t('send_an_invitation_to_fill_and_complete_the_form') %></p>
-            <div class="space-y-2 flex flex-col">
-              <% if can?(:create, Submission) %>
-                <%= link_to new_template_submission_path(@template, with_link: true), id: 'send_to_recipients_button', class: 'base-button mt-6', data: { turbo_frame: 'modal' } do %>
-                  <%= svg_icon('plus', class: 'w-6 h-6 stroke-2') %>
-                  <span class="mr-1"><%= t('send_to_recipients') %></span>
-                <% end %>
+          <p class="text-base-content/60 mb-8">
+            <%= t('send_an_invitation_to_fill_and_complete_the_form') %>
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <% if can?(:create, Submission) %>
+              <%= link_to new_template_submission_path(@template, with_link: true), id: 'send_to_recipients_button', class: 'btn btn-primary gap-2', data: { turbo_frame: 'modal' } do %>
+                <%= svg_icon('send', class: 'w-5 h-5') %>
+                <%= t('send_to_recipients') %>
               <% end %>
-              <% if @template.submitters.size == 1 %>
-                <%= button_to start_form_path(@template.slug), params: { selfsign: true }, method: :put, class: 'white-button w-full', form: { style: 'display: inline', target: '_blank', data: { turbo: false } } do %>
-                  <%= svg_icon('writing', class: 'w-6 h-6') %>
-                  <span class="mr-1"><%= t('sign_it_yourself') %></span>
-                <% end %>
-              <% else %>
-                <%= link_to new_template_submission_path(@template, selfsign: true), id: 'sign_yourself_button', class: 'white-button mt-6', data: { turbo_frame: 'modal' } do %>
-                  <%= svg_icon('writing', class: 'w-6 h-6') %>
-                  <span class="mr-1"><%= t('sign_it_yourself') %></span>
-                <% end %>
+            <% end %>
+            
+            <% if @template.submitters.size == 1 %>
+              <%= button_to start_form_path(@template.slug), params: { selfsign: true }, method: :put, class: 'btn btn-outline gap-2', form: { style: 'display: inline-block', target: '_blank', data: { turbo: false } } do %>
+                <%= svg_icon('writing', class: 'w-5 h-5') %>
+                <%= t('sign_it_yourself') %>
               <% end %>
-            </div>
+            <% else %>
+              <%= link_to new_template_submission_path(@template, selfsign: true), id: 'sign_yourself_button', class: 'btn btn-outline gap-2', data: { turbo_frame: 'modal' } do %>
+                <%= svg_icon('writing', class: 'w-5 h-5') %>
+                <%= t('sign_it_yourself') %>
+              <% end %>
+            <% end %>
           </div>
         <% end %>
       </div>
     </div>
   </div>
 <% end %>
+
 <% view_archived_html = capture do %>
   <% if (can?(:manage, :countless) || @template.submissions.where.not(archived_at: nil).exists?) && !@template.archived_at? %>
-    <div>
-      <a href="<%= template_archived_index_path(@template) %>" class="link text-sm"><%= t('view_archived') %></a>
+    <div class="mt-4 text-center">
+      <a href="<%= template_archived_index_path(@template) %>" class="btn btn-sm btn-ghost text-base-content/60 hover:text-primary gap-2">
+        <%= svg_icon('archive', class: 'w-4 h-4') %>
+        <%= t('view_archived') %>
+      </a>
     </div>
   <% end %>
 <% end %>
+
 <% if @pagy.pages > 1 %>
   <%= render 'shared/pagination', pagy: @pagy, items_name: 'submissions', left_additional_html: view_archived_html %>
 <% else %>
-  <div class="mt-2">
-    <%= view_archived_html %>
-  </div>
+  <%= view_archived_html %>
 <% end %>
+
 <%= render 'shared/app_tour', type: 'template', next_page_path: settings_account_path(params.permit(:tour)) %>

@@ -123,7 +123,7 @@ RSpec.describe 'Signing Form' do
 
       # Image step
       find('#dropzone').click
-      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
       click_button 'next'
 
       # File step
@@ -210,7 +210,7 @@ RSpec.describe 'Signing Form' do
 
       # Image step
       find('#dropzone').click
-      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
       click_button 'next'
 
       # File step
@@ -300,7 +300,7 @@ RSpec.describe 'Signing Form' do
       click_button 'next'
 
       find('#dropzone').click
-      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
       click_button 'next'
 
       find('#dropzone').click
@@ -388,7 +388,7 @@ RSpec.describe 'Signing Form' do
 
       # Image step
       find('#dropzone').click
-      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
       click_button 'next'
 
       # File step
@@ -741,7 +741,7 @@ RSpec.describe 'Signing Form' do
 
       find('#expand_form_button').click
       find('span[data-tip="Click to upload"]').click
-      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
 
       sleep 0.1
 
@@ -768,7 +768,7 @@ RSpec.describe 'Signing Form' do
 
       find('#expand_form_button').click
       find('#dropzone').click
-      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.png'))
+      find('input[type="file"]', visible: false).attach_file(Rails.root.join('spec/fixtures/sample-image.svg'))
       click_button 'Complete'
 
       expect(page).to have_content('Form has been completed!')

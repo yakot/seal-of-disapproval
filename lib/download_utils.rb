@@ -35,16 +35,16 @@ module DownloadUtils
 
   module_function
 
-  def call(url, validate: Docuseal.multitenant?)
+  def call(url)
     uri = begin
       URI(url)
     rescue URI::Error
       Addressable::URI.parse(url).normalize
     end
 
-    validate_uri!(uri) if validate
+    validate_uri!(uri) if Docuseal.multitenant?
 
-    resp = conn(validate:).get(uri)
+    resp = conn.get(uri)
 
     raise UnableToDownload, "Error loading: #{uri}" if resp.status >= 400
 
@@ -52,15 +52,14 @@ module DownloadUtils
   end
 
   def validate_uri!(uri)
-    raise UnableToDownload, "Error loading: #{uri}. Only HTTPS is allowed." if uri.scheme != 'https' ||
-                                                                               [443, nil].exclude?(uri.port)
+    raise UnableToDownload, "Error loading: #{uri}. Only HTTPS is allowed." if uri.scheme != 'https'
     raise UnableToDownload, "Error loading: #{uri}. Can't download from localhost." if uri.host.in?(LOCALHOSTS)
   end
 
-  def conn(validate: Docuseal.multitenant?)
+  def conn
     Faraday.new do |faraday|
       faraday.response :follow_redirects, callback: lambda { |_, new_env|
-        validate_uri!(new_env[:url]) if validate
+        validate_uri!(new_env[:url]) if Docuseal.multitenant?
       }
     end
   end

@@ -27,18 +27,20 @@ class SubmissionsDownloadController < ApplicationController
 
     Submissions::EnsureResultGenerated.call(last_submitter)
 
-    if !signature_valid && !current_user_submitter?(last_submitter)
-      return head :not_found unless Submitters::AuthorizedForForm.call(@submitter, current_user, request)
+    if last_submitter.completed_at < TTL.ago && !signature_valid && !current_user_submitter?(last_submitter)
+      Rollbar.info("TTL: #{last_submitter.id}") if defined?(Rollbar)
 
-      if last_submitter.completed_at < TTL.ago
-        Rollbar.info("TTL: #{last_submitter.id}") if defined?(Rollbar)
-
-        return head :not_found
-      end
+      return head :not_found
     end
 
     if params[:combined] == 'true'
-      respond_with_combined(last_submitter)
+      url = build_combined_url(@submitter)
+
+      if url
+        render json: [url]
+      else
+        head :not_found
+      end
     else
       render json: build_urls(last_submitter)
     end
@@ -46,18 +48,8 @@ class SubmissionsDownloadController < ApplicationController
 
   private
 
-  def respond_with_combined(submitter)
-    url = build_combined_url(submitter)
-
-    if url
-      render json: [url]
-    else
-      head :not_found
-    end
-  end
-
   def current_user_submitter?(submitter)
-    current_user && current_ability.can?(:read, submitter)
+    current_user && current_user.account.submitters.exists?(id: submitter.id)
   end
 
   def build_urls(submitter)

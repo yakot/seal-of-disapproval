@@ -1,21 +1,36 @@
-<div class="max-w-md mx-auto px-2 mt-12 mb-4">
-  <div class="space-y-6 mx-auto">
-    <div class="space-y-6">
-      <div class="flex items-center justify-center">
-        <%= render 'start_form/banner' %>
+<div class="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50/50">
+  <div class="w-full max-w-lg">
+    <div class="overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-900/5">
+      <!-- Status Header -->
+      <div class="bg-gradient-to-br from-amber-500 to-orange-600 px-8 py-8 text-center">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm mb-4">
+          <%= svg_icon('clock', class: 'w-10 h-10 text-white') %>
+        </div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">
+          <%= t('form_has_been_expired') %>
+        </h1>
       </div>
-      <div class="flex items-center bg-base-200 rounded-xl p-4 mb-4">
-        <div class="flex items-center">
-          <div class="mr-3">
-            <%= svg_icon('writing_sign', class: 'w-10 h-10') %>
+
+      <!-- Document Info -->
+      <div class="px-8 py-6">
+        <div class="flex items-center rounded-xl border border-gray-100 bg-gray-50/80 p-4">
+          <div class="mr-4 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-amber-50">
+            <%= svg_icon('writing_sign', class: 'w-6 h-6 text-amber-600') %>
           </div>
-          <div dir="auto">
-            <p class="text-lg font-bold mb-1"><%= @submitter.submission.name || @submitter.submission.template.name %></p>
-            <p class="text-sm"><%= t('form_expired_at_html', time: l(@submitter.submission.expire_at, format: :long)) %></p>
+          <div dir="auto" class="min-w-0">
+            <p class="text-base font-semibold text-gray-900 truncate"><%= @submitter.submission.name || @submitter.submission.template.name %></p>
+            <p class="text-sm text-gray-500 mt-0.5"><%= t('form_expired_at_html', time: l(@submitter.submission.expire_at, format: :long)) %></p>
           </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="border-t border-gray-100 bg-gray-50/50 px-8 py-4">
+        <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
+          <%= svg_icon('shield_check', class: 'w-4 h-4') %>
+          <span>Secured by GoSign</span>
         </div>
       </div>
     </div>
   </div>
 </div>
-<%= render 'shared/attribution', link_path: '/start', account: @submitter.account %>

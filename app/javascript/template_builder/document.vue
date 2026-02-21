@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div
+      v-if="!sortedPreviewImages.length"
+      class="flex items-center justify-center bg-base-200 rounded border"
+      :style="{ width: '100%', aspectRatio: '1400 / 1812' }"
+    >
+      <span class="loading loading-spinner loading-lg opacity-50" />
+    </div>
     <Page
       v-for="(image, index) in sortedPreviewImages"
       :key="image.id"
@@ -13,7 +20,6 @@
       :with-signature-id="withSignatureId"
       :with-prefillable="withPrefillable"
       :is-drag="isDrag"
-      :is-mobile="isMobile"
       :with-field-placeholder="withFieldPlaceholder"
       :default-fields="defaultFields"
       :drag-field-placeholder="dragFieldPlaceholder"
@@ -31,9 +37,9 @@
       @copy-field="$emit('copy-field', $event)"
       @paste-field="$emit('paste-field', { ...$event, attachment_uuid: document.uuid })"
       @add-custom-field="$emit('add-custom-field', $event)"
-      @set-draw="$emit('set-draw', $event)"
       @copy-selected-areas="$emit('copy-selected-areas')"
       @delete-selected-areas="$emit('delete-selected-areas')"
+      @align-selected-areas="$emit('align-selected-areas', $event)"
       @autodetect-fields="$emit('autodetect-fields', $event)"
       @scroll-to="scrollToArea"
       @draw="$emit('draw', { area: {...$event.area, attachment_uuid: document.uuid }, isTooSmall: $event.isTooSmall })"
@@ -99,11 +105,6 @@ export default {
       required: false,
       default: () => []
     },
-    isMobile: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
     allowDraw: {
       type: Boolean,
       required: false,
@@ -144,7 +145,7 @@ export default {
       default: false
     }
   },
-  emits: ['draw', 'drop-field', 'remove-area', 'paste-field', 'copy-field', 'copy-selected-areas', 'delete-selected-areas', 'autodetect-fields', 'add-custom-field', 'set-draw'],
+  emits: ['draw', 'drop-field', 'remove-area', 'paste-field', 'copy-field', 'copy-selected-areas', 'delete-selected-areas', 'align-selected-areas', 'autodetect-fields', 'add-custom-field'],
   data () {
     return {
       pageRefs: []
@@ -186,15 +187,7 @@ export default {
   methods: {
     scrollToArea (area) {
       this.$nextTick(() => {
-        const pageRef = this.pageRefs[area.page]
-
-        if (pageRef && pageRef.areaRefs) {
-          const areaRef = pageRef.areaRefs.find((e) => e.area === area)
-
-          if (areaRef && areaRef.$el) {
-            areaRef.$el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          }
-        }
+        this.pageRefs[area.page].areaRefs.find((e) => e.area === area).$el.scrollIntoView({ behavior: 'smooth', block: 'center' })
       })
     },
     setPageRefs (el) {

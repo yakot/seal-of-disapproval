@@ -11,9 +11,7 @@ class SubmitFormDeclineController < ApplicationController
                                                            submitter.completed_at? ||
                                                            submitter.submission.archived_at? ||
                                                            submitter.submission.expired? ||
-                                                           submitter.submission.template&.archived_at? ||
-                                                           !Submitters::AuthorizedForForm.call(submitter, current_user,
-                                                                                               request)
+                                                           submitter.submission.template&.archived_at?
 
     ApplicationRecord.transaction do
       submitter.update!(declined_at: Time.current)

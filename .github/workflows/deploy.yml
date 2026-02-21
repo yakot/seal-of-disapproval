@@ -1,0 +1,38 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to Production Server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          /usr/local/bin/gosign-deploy
+
+    - name: Deployment Summary
+      if: success()
+      run: |
+        echo "✅ Deployment completed successfully!"
+        echo "🚀 Application: https://app.gosign.work"
+        echo "⏱️  Zero downtime deployment with phased restart"
+
+    - name: Deployment Failed
+      if: failure()
+      run: |
+        echo "❌ Deployment failed!"
+        echo "Check the logs above for details"
+        exit 1

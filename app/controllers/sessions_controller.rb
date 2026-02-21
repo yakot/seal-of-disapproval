@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SessionsController < Devise::SessionsController
+  skip_before_action :maybe_redirect_to_setup
+
   before_action :configure_permitted_parameters
 
   around_action :with_browser_locale
@@ -22,7 +24,37 @@ class SessionsController < Devise::SessionsController
     super
   end
 
+  after_action :track_sign_in, only: :create, if: -> { signed_in? }
+  after_action :sync_missing_subscription, only: :create, if: -> { signed_in? }
+
   private
+
+  def track_sign_in
+    SendAuthTrackingJob.perform_async({
+      'user_id' => current_user.id,
+      'event_name' => 'login_completed',
+      'data' => { 'method' => 'email' }
+    })
+  end
+
+  def sync_missing_subscription
+    account = current_user.account
+
+    return unless account.entitlement_source == 'stripe'
+    return if account.stripe_subscription_id.present?
+    return unless account.stripe_customer_id.present?
+
+    Stripe.api_key = ENV['STRIPE_SECRET_KEY']
+
+    subscriptions = Stripe::Subscription.list({ customer: account.stripe_customer_id, status: 'active', limit: 1 })
+    subscription = subscriptions.data.first
+
+    return unless subscription
+
+    account.update!(stripe_subscription_id: subscription.id)
+  rescue Stripe::StripeError => e
+    Rails.logger.error("Stripe sync on login error: #{e.message}")
+  end
 
   def after_sign_in_path_for(...)
     if params[:redir].present?

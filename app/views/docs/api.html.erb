@@ -1,0 +1,24 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold">API Documentation</h1>
+    <%= link_to 'Back to Settings', settings_api_index_path, class: 'btn btn-ghost' if signed_in? %>
+  </div>
+
+  <div class="mb-6">
+    <div class="tabs tabs-boxed">
+      <% if @selected_language == 'shell' %>
+        <%= link_to 'Shell'.titleize, docs_api_path(language: 'shell'), class: "tab tab-active" %>
+      <% else %>
+        <% @languages.each do |lang| %>
+          <%= link_to lang.titleize, docs_api_path(language: lang), class: "tab #{@selected_language == lang ? 'tab-active' : ''}" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card bg-base-200">
+    <div class="card-body max-w-none">
+      <%= raw @content_html %>
+    </div>
+  </div>
+</div>

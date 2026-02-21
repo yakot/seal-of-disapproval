@@ -1,8 +1,16 @@
+<% if signed_in? %>
+  <%= link_to t('documents'), templates_path, class: 'text-sm font-medium text-gray-600 hover:text-gray-900 mr-4' %>
+  <%= link_to t('submissions'), submissions_path, class: 'text-sm font-medium text-gray-600 hover:text-gray-900 mr-4' %>
+<% end %>
+
 <% if signed_in? && current_user != true_user %>
   <%= render 'shared/test_alert' %>
-<% elsif request.path.starts_with?('/settings') %>
-  <%= link_to "#{Docuseal::CLOUD_URL}/sign_up?#{{ redir: "#{Docuseal::CONSOLE_URL}/on_premises" }.to_query}", class: 'hidden md:inline-flex btn btn-warning btn-sm', data: { prefetch: false } do %>
-    <%= t('upgrade') %>
+<%# elsif request.path.starts_with?('/settings') %>
+  <% unless current_account.testing? %>
+    <%= link_to "#{Docuseal::CLOUD_URL}/sign_up?#{{ redir: "#{Docuseal::CONSOLE_URL}/on_premises" }.to_query}", class: 'hidden md:inline-flex btn btn-warning btn-sm', data: { prefetch: false } do %>
+      <%= t('upgrade') %>
+    <% end %>
+    <span class="hidden md:inline-flex h-3 border-r border-base-content"></span>
   <% end %>
-  <span class="hidden md:inline-flex h-3 border-r border-base-content"></span>
 <% end %>
+

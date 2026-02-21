@@ -67,6 +67,19 @@ class SubmissionsController < ApplicationController
 
     WebhookUrls.enqueue_events(submissions, 'submission.created')
 
+    submissions.each do |submission|
+      SendDocumentTrackingJob.perform_async(
+        'event_name' => 'document_created',
+        'user_id' => current_user.id,
+        'data' => {
+          'submission_id' => submission.id,
+          'template_name' => @template.name,
+          'submitter_count' => submission.submitters.size,
+          'source' => 'invite'
+        }
+      )
+    end
+
     Submissions.send_signature_requests(submissions)
 
     SearchEntries.enqueue_reindex(submissions)

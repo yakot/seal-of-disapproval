@@ -1,145 +1,211 @@
-<div class="block w-full md:w-52 flex-none">
+<div class="block w-full md:w-64 flex-none bg-base-100 border-r border-base-200 min-h-screen">
   <menu-active>
-    <ul id="account_settings_menu" class="menu px-0">
-      <li class="menu-title py-0 !bg-transparent mb-3 -mt-5"><a href="<%= '/' %>" class="!bg-transparent !text-neutral font-medium flex items-center space-x-0.5"><%= svg_icon('arrow_left', class: 'w-4 h-4 stroke-2') %><span><%= t('back') %></span></a></li>
-      <li class="menu-title py-0 !bg-transparent">
-        <span class="!bg-transparent"><%= t('settings') %></span>
-      </li>
-      <li></li>
+    <div class="px-4 py-4">
+      <a href="<%= '/' %>" class="btn btn-ghost btn-sm gap-2 pl-0 hover:bg-transparent text-base-content/70 hover:text-base-content">
+        <%= svg_icon('arrow_left', class: 'w-4 h-4 stroke-2') %>
+        <span><%= t('back_to_home') %></span>
+      </a>
+      <h2 class="text-2xl font-bold mt-4 mb-6 px-2"><%= t('settings') %></h2>
+    </div>
+
+    <ul id="account_settings_menu" class="menu w-full px-2 space-y-6">
+      <!-- Account Group -->
       <li>
-        <%= link_to t('profile'), settings_profile_index_path, class: 'text-base hover:bg-base-300' %>
-      </li>
-      <li>
-        <%= link_to t('account'), settings_account_path, class: 'text-base hover:bg-base-300' %>
-      </li>
-      <% unless Docuseal.multitenant? %>
-        <% if can?(:read, EncryptedConfig.new(key: EncryptedConfig::EMAIL_SMTP_KEY, account: current_account)) && ENV['SMTP_ADDRESS'].blank? &&  true_user == current_user %>
+        <h3 class="menu-title text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2 px-4"><%= t('account') %></h3>
+        <ul class="space-y-1">
           <li>
-            <%= link_to t('email'), settings_email_index_path, class: 'text-base hover:bg-base-300' %>
-          </li>
-        <% end %>
-        <% if can?(:read, EncryptedConfig.new(key: EncryptedConfig::FILES_STORAGE_KEY, account: current_account)) && true_user == current_user %>
-          <li>
-            <%= link_to t('storage'), settings_storage_index_path, class: 'text-base hover:bg-base-300' %>
-          </li>
-        <% end %>
-        <% if can?(:read, EncryptedConfig.new(key: 'submitter_invitation_sms', account: current_account)) && true_user == current_user %>
-          <li>
-            <%= link_to 'SMS', settings_sms_path, class: 'text-base hover:bg-base-300' %>
-          </li>
-        <% end %>
-      <% end %>
-      <% if can?(:read, AccountConfig) %>
-        <li>
-          <%= link_to t('notifications'), settings_notifications_path, class: 'text-base hover:bg-base-300' %>
-        </li>
-      <% end %>
-      <% if can?(:read, EncryptedConfig.new(key: EncryptedConfig::ESIGN_CERTS_KEY, account: current_account)) %>
-        <li>
-          <%= link_to t('e_signature'), settings_esign_path, class: 'text-base hover:bg-base-300' %>
-        </li>
-      <% end %>
-      <% if can?(:read, AccountConfig) %>
-        <li>
-          <%= link_to t('personalization'), settings_personalization_path, class: 'text-base hover:bg-base-300' %>
-        </li>
-      <% end %>
-      <% if can?(:read, User) %>
-        <li>
-          <%= link_to t('users'), settings_users_path, class: 'text-base hover:bg-base-300' %>
-        </li>
-      <% end %>
-      <%= render 'shared/settings_nav_extra' %>
-      <% if Docuseal.demo? || !Docuseal.multitenant? %>
-        <% if can?(:read, AccessToken) %>
-          <li>
-            <%= link_to 'API', settings_api_index_path, class: 'text-base hover:bg-base-300' %>
-          </li>
-        <% end %>
-      <% end %>
-      <% if Docuseal.demo? || !Docuseal.multitenant? || (current_user != true_user && !current_account.testing?) %>
-        <% if can?(:read, WebhookUrl) %>
-          <li>
-            <%= link_to 'Webhooks', settings_webhooks_path, class: 'text-base hover:bg-base-300' %>
-          </li>
-        <% end %>
-      <% end %>
-      <% if !Docuseal.demo? && can?(:manage, EncryptedConfig) && (current_user != true_user || !current_account.linked_account_account) %>
-        <li>
-          <%= content_for(:pro_link) || link_to(Docuseal.multitenant? ? console_redirect_index_path(redir: "#{Docuseal::CONSOLE_URL}/plans") : "#{Docuseal::CLOUD_URL}/sign_up?#{{ redir: "#{Docuseal::CONSOLE_URL}/on_premises" }.to_query}", class: 'text-base hover:bg-base-300', data: { turbo: false }) do %>
-            <%= t('plans') %>
-            <span class="badge badge-warning"><%= t('pro') %></span>
-          <% end %>
-        </li>
-      <% end %>
-      <% if !Docuseal.demo? && can?(:manage, EncryptedConfig) && (current_user == true_user || current_account.testing?) %>
-        <li>
-          <%= link_to Docuseal.multitenant? ? console_redirect_index_path(redir: "#{Docuseal::CONSOLE_URL}#{'/test' if current_account.testing?}/api") : "#{Docuseal::CONSOLE_URL}/on_premises", class: 'text-base hover:bg-base-300', data: { turbo: false } do %>
-            <% if Docuseal.multitenant? %> API <% else %> <%= t('console') %> <% end %>
-          <% end %>
-        </li>
-        <% if Docuseal.multitenant? %>
-          <li>
-            <%= link_to console_redirect_index_path(redir: "#{Docuseal::CONSOLE_URL}#{'/test' if current_account.testing?}/embedding/form"), class: 'text-base hover:bg-base-300', data: { turbo: false } do %>
-              <%= t('embedding') %>
+            <%= link_to settings_profile_index_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+              <%= svg_icon('user', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+              <%= t('profile') %>
             <% end %>
           </li>
-        <% end %>
-        <% if (!Docuseal.multitenant? || can?(:manage, :saml_sso)) && can?(:read, EncryptedConfig.new(key: 'saml_configs', account: current_account)) && true_user == current_user %>
           <li>
-            <%= link_to 'SSO', settings_sso_index_path, class: 'text-base hover:bg-base-300' %>
+            <%= link_to settings_account_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+              <%= svg_icon('building', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+              <%= t('account') %>
+            <% end %>
           </li>
-        <% end %>
-        <%= render 'shared/settings_nav_extra2' %>
-        <% if (can?(:manage, EncryptedConfig) && current_user == true_user) || (current_user != true_user && current_account.testing?) %>
-          <%= form_for '', url: testing_account_path, method: current_account.testing? ? :delete : :get, html: { class: 'w-full' } do |f| %>
+          <li>
+            <%= link_to settings_billing_index_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+              <%= svg_icon('credit_card', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+              <%= t('billing') %>
+            <% end %>
+          </li>
+          <% if can?(:read, User) %>
             <li>
-              <label class="flex items-center text-base hover:bg-base-300 w-full justify-between" for="testing_toggle">
-                <span class="mr-2 w-full">
-                  <%= t('test_mode') %>
-                </span>
-                <submit-form data-on="change" class="flex">
-                  <%= f.check_box :testing_toggle, class: 'toggle toggle-sm', checked: current_account.testing? %>
-                </submit-form>
-              </label>
+              <% if can?(:access, :settings_users) %>
+                <%= link_to settings_users_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('users', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <%= t('users') %>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('users', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <%= t('users') %>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
             </li>
           <% end %>
-        <% end %>
-      <% end %>
+        </ul>
+      </li>
+
+      <!-- Signing and Sending Group -->
+      <li>
+        <h3 class="menu-title text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2 px-4"><%= t('signing_and_sending') %></h3>
+        <ul class="space-y-1">
+          <% if can?(:read, EncryptedConfig.new(key: EncryptedConfig::ESIGN_CERTS_KEY, account: current_account)) %>
+            <li>
+              <% if can?(:access, :settings_esign) %>
+                <%= link_to settings_esign_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('pencil', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <%= t('e_signature') %>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('pencil', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <%= t('e_signature') %>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+
+          <% if can?(:read, AccountConfig) %>
+            <li>
+              <% if can?(:access, :settings_personalization) %>
+                <%= link_to settings_personalization_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('adjustments', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <%= t('personalization') %>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('adjustments', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <%= t('personalization') %>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+
+          <% if can?(:read, AccountConfig) %>
+            <li>
+              <% if can?(:access, :settings_notifications) %>
+                <%= link_to settings_notifications_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('mail', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <%= t('notifications') %>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('mail', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <%= t('notifications') %>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+
+           <% if can?(:read, EncryptedConfig.new(key: EncryptedConfig::EMAIL_SMTP_KEY, account: current_account)) && ENV['SMTP_ADDRESS'].blank? && true_user == current_user && false %>
+            <li>
+              <% if can?(:access, :settings_email) %>
+                <%= link_to settings_email_index_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('mail_opened', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <%= t('email') %>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('mail_opened', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <%= t('email') %>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+
+      <!-- Integrations Group -->
+      <li>
+        <h3 class="menu-title text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2 px-4"><%= t('integrations') %></h3>
+        <ul class="space-y-1">
+          <% if can?(:read, AccessToken) || Docuseal.feature_restricted?('api') %>
+            <li>
+              <% if can?(:read, AccessToken) %>
+                <%= link_to settings_api_index_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('code', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <span>API</span>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('code', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <span>API</span>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+
+          <% if can?(:read, WebhookUrl) || Docuseal.feature_restricted?('webhooks') %>
+            <li>
+              <% if can?(:read, WebhookUrl) %>
+                <%= link_to settings_webhooks_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <%= svg_icon('world', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                  <span>Webhooks</span>
+                <% end %>
+              <% else %>
+                <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                  <div class="flex items-center">
+                    <%= svg_icon('world', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <span>Webhooks</span>
+                  </div>
+                  <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+
+          <% if !Docuseal.demo? && can?(:manage, EncryptedConfig) && (current_user == true_user || current_account.testing?) %>
+            <% if can?(:read, EncryptedConfig.new(key: 'saml_configs', account: current_account)) || Docuseal.feature_restricted?('sso') %>
+              <li>
+                <% if can?(:manage, :saml_sso) %>
+                  <%= link_to settings_sso_index_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                    <%= svg_icon('lock', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                    <span>SSO</span>
+                  <% end %>
+                <% else %>
+                  <%= link_to settings_billing_index_url, class: 'group flex items-center justify-between px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+                    <div class="flex items-center">
+                      <%= svg_icon('lock', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+                      <span>SSO</span>
+                    </div>
+                    <span class="badge badge-sm badge-pro ml-auto">Pro</span>
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+            <%= render 'shared/settings_nav_extra2' %>
+          <% end %>
+          <li>
+            <%= link_to self_host_index_path, class: 'group flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-base-200 hover:text-primary transition-colors' do %>
+              <%= svg_icon('cloud_upload', class: 'w-5 h-5 mr-3 text-base-content/50 group-hover:text-primary') %>
+              <span>Self Host</span>
+            <% end %>
+          </li>
+        </ul>
+      </li>
+      <%= render 'shared/settings_nav_extra' %>
     </ul>
   </menu-active>
-  <% if Docuseal.multitenant? || cannot?(:manage, :tenants) %>
-    <div id="support_channels" class="mx-4 border-t border-base-300 hidden md:block">
-      <div class="text-sm mt-3">
-        <%= t('need_help_ask_a_question_') %>
-      </div>
-      <div class="flex mt-3 space-x-3">
-        <div class="tooltip" data-tip="GitHub">
-          <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" class="btn btn-circle btn-primary btn-md">
-            <%= svg_icon('brand_github', class: 'w-8 h-8') %>
-          </a>
-        </div>
-        <div class="tooltip" data-tip="<%= t('discord_community') %>">
-          <a href="<%= Docuseal::DISCORD_URL %>" target="_blank" class="btn btn-circle btn-primary btn-md">
-            <%= svg_icon('brand_discord', class: 'w-8 h-8') %>
-          </a>
-        </div>
-        <%= capture do %>
-          <div class="tooltip" data-tip="<%= t('ai_assistant') %>">
-            <a href="<%= Docuseal::CHATGPT_URL %>" target="_blank" class="btn btn-circle btn-primary btn-md">
-              <%= svg_icon('brand_openai', class: 'w-8 h-8') %>
-            </a>
-          </div>
-        <% end %>
-      </div>
-      <a href="mailto:<%= Docuseal::SUPPORT_EMAIL %>" target="_blank" class="w-full block mt-4 underline text-center">
-        <%= Docuseal::SUPPORT_EMAIL %>
-      </a>
-      <% if Docuseal.version.present? && !Docuseal.multitenant? && can?(:manage, EncryptedConfig) %>
-        <a href="https://github.com/docusealco/docuseal/releases" target="_blank" class="badge badge-outline text-xs block mx-auto mt-4">
-          v<%= Docuseal.version %>
-        </a>
-      <% end %>
-    </div>
-  <% end %>
 </div>

@@ -10,6 +10,12 @@ class SubmissionsExportController < ApplicationController
                                                      attachments_attachments: :blob })
                               .order(id: :asc)
 
+    # Filter by selected submission IDs if provided
+    if params[:submission_ids].present?
+      submission_ids = params[:submission_ids].split(',').map(&:to_i)
+      submissions = submissions.where(id: submission_ids)
+    end
+
     submissions = Submissions.search(current_user, submissions, params[:q], search_values: true)
     submissions = Submissions::Filter.call(submissions, current_user, params)
 

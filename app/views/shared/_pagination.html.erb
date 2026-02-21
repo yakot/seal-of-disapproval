@@ -1,4 +1,34 @@
 <% if pagy.pages > 1 %>
+  <%
+    # Calculate which page numbers to show (max 6 pages)
+    max_pages_to_show = 6
+    current_page = pagy.page
+    total_pages = pagy.pages
+
+    if total_pages <= max_pages_to_show
+      # Show all pages if total is 6 or less
+      page_range = (1..total_pages).to_a
+    else
+      # Show current page with 2 pages on each side, plus first and last
+      start_page = [current_page - 2, 2].max
+      end_page = [current_page + 2, total_pages - 1].min
+
+      # Adjust if we're near the beginning or end
+      if current_page <= 3
+        start_page = 2
+        end_page = [5, total_pages - 1].min
+      elsif current_page >= total_pages - 2
+        start_page = [total_pages - 4, 2].max
+        end_page = total_pages - 1
+      end
+
+      page_range = [1]
+      page_range << '...' if start_page > 2
+      page_range.concat((start_page..end_page).to_a)
+      page_range << '...' if end_page < total_pages - 1
+      page_range << total_pages
+    end
+  %>
   <div class="flex my-6 justify-center md:justify-between">
     <div class="hidden md:block text-sm">
       <% if pagy.count.nil? %>
@@ -16,9 +46,17 @@
         <% else %>
           <span class="join-item btn btn-disabled !bg-base-200 min-h-full h-10">«</span>
         <% end %>
-        <span class="join-item btn font-medium uppercase min-h-full h-10">
-          <%= t('page_number', number: pagy.page) %>
-        </span>
+
+        <% page_range.each do |page| %>
+          <% if page == '...' %>
+            <span class="join-item btn btn-disabled !bg-base-200 min-h-full h-10 px-2">…</span>
+          <% elsif page == pagy.page %>
+            <span class="join-item btn btn-neutral text-white min-h-full h-10 px-3"><%= page %></span>
+          <% else %>
+            <%= link_to page, url_for(params: request.query_parameters.merge('page' => page)), class: 'join-item btn min-h-full h-10 px-3' %>
+          <% end %>
+        <% end %>
+
         <% if local_assigns[:next_page_path].present? %>
           <%= link_to '»', local_assigns[:next_page_path], class: 'join-item btn min-h-full h-10' %>
         <% elsif pagy.next %>

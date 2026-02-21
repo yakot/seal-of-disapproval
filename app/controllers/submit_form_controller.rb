@@ -9,15 +9,15 @@ class SubmitFormController < ApplicationController
 
   before_action :load_submitter, only: %i[show update completed]
   before_action :maybe_render_locked_page, only: :show
-  before_action :maybe_require_link_2fa, only: %i[show]
+  before_action :maybe_require_link_2fa, only: %i[show update]
 
   CONFIG_KEYS = [].freeze
 
   def show
     submission = @submitter.submission
 
-    return render :email_2fa unless Submitters::AuthorizedForForm.pass_email_2fa?(@submitter, request)
     return redirect_to submit_form_completed_path(@submitter.slug) if @submitter.completed_at?
+    return render :email_2fa if require_email_2fa?(@submitter)
 
     @form_configs = Submitters::FormConfigs.call(@submitter, CONFIG_KEYS)
 
@@ -48,7 +48,7 @@ class SubmitFormController < ApplicationController
   end
 
   def update
-    unless Submitters::AuthorizedForForm.call(@submitter, current_user, request)
+    if require_email_2fa?(@submitter)
       return render json: { error: I18n.t('verification_required_refresh_the_page_and_pass_2fa') },
                     status: :unprocessable_content
     end
@@ -84,9 +84,7 @@ class SubmitFormController < ApplicationController
   def completed
     raise ActionController::RoutingError, I18n.t('not_found') if @submitter.account.archived_at?
 
-    return if Submitters::AuthorizedForForm.call(@submitter, current_user, request)
-
-    redirect_to submit_form_path(params[:submit_form_slug])
+    redirect_to submit_form_path(params[:submit_form_slug]) if require_email_2fa?(@submitter)
   end
 
   def success; end
@@ -94,7 +92,10 @@ class SubmitFormController < ApplicationController
   private
 
   def maybe_require_link_2fa
-    return if Submitters::AuthorizedForForm.pass_link_2fa?(@submitter, current_user, request)
+    return if @submitter.submission.source != 'link'
+    return unless @submitter.submission.template&.preferences&.dig('shared_link_2fa') == true
+    return if cookies.encrypted[:email_2fa_slug] == @submitter.slug
+    return if @submitter.email == current_user&.email && current_user&.account_id == @submitter.account_id
 
     redirect_to start_form_path(@submitter.submission.template.slug)
   end
@@ -115,5 +116,13 @@ class SubmitFormController < ApplicationController
   def build_attachments_index(submission)
     ActiveStorage::Attachment.where(record: submission.submitters, name: :attachments)
                              .preload(:blob).index_by(&:uuid)
+  end
+
+  def require_email_2fa?(submitter)
+    return false if submitter.submission.template&.preferences&.dig('require_email_2fa') != true &&
+                    submitter.preferences['require_email_2fa'] != true
+    return false if cookies.encrypted[:email_2fa_slug] == submitter.slug
+
+    true
   end
 end

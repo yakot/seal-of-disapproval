@@ -1,0 +1,140 @@
+<div class="flex min-h-[80vh] items-center justify-center py-12 sm:px-6 lg:px-8">
+  <div class="flex w-full max-w-[1000px] overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-900/5">
+    
+    <!-- Left Side: Branding (Hidden on mobile) -->
+    <div class="hidden w-1/2 bg-primary p-12 lg:flex flex-col justify-between relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary to-blue-900 opacity-90"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30"></div>
+      
+      <div class="relative z-10">
+        <h2 class="text-3xl font-bold text-white mb-6">GoSign</h2>
+        <div class="space-y-4">
+          <p class="text-blue-100 text-lg leading-relaxed">
+            Join thousands of companies signing documents securely with GoSign.
+          </p>
+          <div class="flex items-center space-x-2 text-blue-200 text-sm mt-8">
+            <%= svg_icon('shield_check', class: 'w-5 h-5') %>
+            <span>Get started in seconds</span>
+          </div>
+          <div class="flex items-center space-x-2 text-blue-200 text-sm">
+            <%= svg_icon('discount_check_filled', class: 'w-5 h-5') %>
+            <span>No credit card required</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative z-10 text-blue-200 text-sm">
+        &copy; <%= Date.today.year %> GoSign. All rights reserved.
+      </div>
+    </div>
+
+    <!-- Right Side: Signup Form -->
+    <div class="w-full lg:w-1/2 p-8 sm:p-12">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900"><%= t('sign_up') %></h2>
+        <p class="mt-2 text-sm text-gray-600">
+          Already have an account? 
+          <%= link_to t('sign_in'), new_user_session_path, class: 'font-medium text-primary hover:text-primary/80 transition-colors' %>
+        </p>
+      </div>
+
+      <%= form_for '', html: { class: 'space-y-5' }, url: registration_path do |f| %>
+        <%= render 'devise/shared/error_messages', resource: @user %>
+        
+        <%= fields_for @user do |ff| %>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div class="form-control">
+              <%= ff.label :first_name, t('first_name'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+              <%= ff.text_field :first_name, required: true, class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm bg-gray-50/50 hover:bg-white transition-colors', autofocus: true, placeholder: 'Jane' %>
+            </div>
+            <div class="form-control">
+              <%= ff.label :last_name, t('last_name'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+              <%= ff.text_field :last_name, required: true, class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm bg-gray-50/50 hover:bg-white transition-colors', placeholder: 'Doe' %>
+            </div>
+          </div>
+          
+          <div class="form-control">
+            <%= ff.label :email, t('email'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+            <%= ff.email_field :email, required: true, class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm bg-gray-50/50 hover:bg-white transition-colors', autocomplete: 'email', placeholder: 'jane@company.com' %>
+          </div>
+        <% end %>
+
+        <%= fields_for @account do |ff| %>
+          <set-timezone data-input-id="account_timezone"></set-timezone>
+          <%= ff.hidden_field :timezone %>
+          <div class="form-control">
+            <%= ff.label :name, t('company_name'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+            <%= ff.text_field :name, required: true, class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm bg-gray-50/50 hover:bg-white transition-colors', placeholder: 'Acme Inc.' %>
+          </div>
+        <% end %>
+
+        <%= fields_for @user do |ff| %>
+          <div class="form-control">
+            <%= ff.label :password, t('password'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+            <password-input class="block relative">
+              <%= ff.password_field :password, required: true, placeholder: 'Min. 8 characters', class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm bg-gray-50/50 hover:bg-white transition-colors pr-10', autocomplete: 'new-password', data: { target: 'password-input.passwordInput' } %>
+              <button data-target="password-input.togglePasswordVisibility" type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                <span data-target="password-input.hiddenPasswordIcon">
+                  <%= svg_icon('eye', class: 'w-5 h-5 shrink-0') %>
+                </span>
+                <span data-target="password-input.visiblePasswordIcon" class="hidden">
+                  <%= svg_icon('eye_off', class: 'w-5 h-5 shrink-0') %>
+                </span>
+              </button>
+            </password-input>
+          </div>
+        <% end %>
+
+        <%= fields_for @account do |ff| %>
+          <div class="form-control">
+            <%= ff.label :locale, t('language'), class: 'block text-sm font-semibold text-gray-700 mb-1.5' %>
+            <%= ff.select :locale, options_for_select(AccountsController::LOCALE_OPTIONS.invert, @account.locale), {}, class: 'block w-full rounded-lg border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm bg-gray-50/50 hover:bg-white transition-colors' %>
+          </div>
+        <% end %>
+
+        <div class="pt-2">
+          <%= f.button class: 'flex w-full justify-center rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all transform active:scale-[0.98]' do %>
+            <%= t(:sign_up) %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if User.omniauth_providers.any? %>
+        <div class="mt-8">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="bg-white px-4 text-gray-500 font-medium">Or continue with</span>
+            </div>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 gap-3">
+            <% if User.omniauth_providers.include?(:google_oauth2) %>
+              <%= form_for '', url: user_google_oauth2_omniauth_authorize_path, data: { turbo: false }, method: :post do |f| %>
+                <set-timezone data-input-id="reg_state" data-params="true"></set-timezone>
+                <%= hidden_field_tag :state, '', id: 'reg_state' %>
+                <%= f.button class: 'flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all' do %>
+                  <%= svg_icon('brand_google', class: 'h-5 w-5') %>
+                  <span class="text-sm">Google</span>
+                <% end %>
+              <% end %>
+            <% end %>
+
+            <% if User.omniauth_providers.include?(:microsoft_graph) %>
+              <%= form_for '', url: user_microsoft_graph_omniauth_authorize_path, data: { turbo: false }, method: :post do |f| %>
+                <set-timezone data-input-id="reg_state_microsoft" data-params="true"></set-timezone>
+                <%= hidden_field_tag :state, '', id: 'reg_state_microsoft' %>
+                <%= f.button class: 'flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all' do %>
+                  <%= svg_icon('brand_microsoft', class: 'h-5 w-5') %>
+                  <span class="text-sm">Microsoft</span>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

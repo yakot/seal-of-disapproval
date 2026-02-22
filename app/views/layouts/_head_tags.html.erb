@@ -94,12 +94,3 @@
     }
   </script>
 <% end %>
-<% if ENV['TWITTER_PIXEL_ID'].present? && ENV['TWITTER_SIGNUP_EVENT_ID'].present? && session.delete(:track_signup) %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    if (typeof twq === 'function') {
-      twq('event', '<%= ENV["TWITTER_SIGNUP_EVENT_ID"] %>', {
-        conversion_id: 'signup_<%= current_user&.id %>'
-      });
-    }
-  </script>
-<% end %>

@@ -12,6 +12,7 @@ class AttributionIdsController < ApplicationController
       wbraid: params[:wbraid],
       fbclid: params[:fbclid],
       twclid: params[:twclid],
+      ga_client_id: params[:ga_client_id],
       utm_source: params[:utm_source],
       utm_medium: params[:utm_medium],
       utm_campaign: params[:utm_campaign],

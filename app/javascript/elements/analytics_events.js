@@ -1,6 +1,7 @@
 export default class extends HTMLElement {
   connectedCallback () {
     this.trackCheckoutSuccess()
+    this.trackSignup()
   }
 
   trackCheckoutSuccess () {
@@ -13,7 +14,17 @@ export default class extends HTMLElement {
     const transactionId = this.dataset.transactionId || `gosign_${Date.now()}`
     const currency = this.dataset.currency || 'USD'
 
-    // X (Twitter) purchase event — only client-side tracking needed (no server API)
+    // Google Ads purchase conversion
+    if (typeof gtag === 'function' && this.dataset.googleAdsConversionId && this.dataset.googleAdsConversionLabel) {
+      gtag('event', 'conversion', {
+        send_to: `${this.dataset.googleAdsConversionId}/${this.dataset.googleAdsConversionLabel}`,
+        value: value,
+        currency: currency,
+        transaction_id: transactionId
+      })
+    }
+
+    // X (Twitter) purchase event
     if (typeof twq === 'function' && this.dataset.twitterEventId) {
       twq('event', this.dataset.twitterEventId, {
         value: value,
@@ -27,5 +38,15 @@ export default class extends HTMLElement {
     // Clean URL
     url.searchParams.delete('success')
     window.history.replaceState({}, document.title, url.pathname + url.search)
+  }
+
+  trackSignup () {
+    if (this.dataset.signup !== 'true') return
+
+    if (typeof twq === 'function' && this.dataset.twitterSignupEventId) {
+      twq('event', this.dataset.twitterSignupEventId, {
+        conversion_id: `signup_${this.dataset.userId}`
+      })
+    }
   }
 }

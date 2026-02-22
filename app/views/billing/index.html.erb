@@ -5,6 +5,8 @@
     data-transaction-id="<%= @subscription.latest_invoice rescue '' %>"
     data-currency="<%= @subscription.items.data.first.price.currency&.upcase rescue 'USD' %>"
     data-twitter-event-id="<%= ENV['TWITTER_PURCHASE_EVENT_ID'] %>"
+    data-google-ads-conversion-id="<%= ENV['GOOGLE_ADS_CONVERSION_ID'] %>"
+    data-google-ads-conversion-label="<%= ENV['GOOGLE_ADS_CONVERSION_LABEL'] %>"
   ></analytics-events>
 <% end %>
 <div class="flex flex-wrap md:flex-nowrap h-full bg-base-200/50">

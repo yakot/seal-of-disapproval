@@ -50,6 +50,7 @@ module Docuseal
 
   DEFAULT_URL_OPTIONS = {
     host: HOST,
+    port: Addressable::URI.parse(DEFAULT_APP_URL).port,
     protocol: ENV['FORCE_SSL'].present? ? 'https' : 'http'
   }.freeze
 

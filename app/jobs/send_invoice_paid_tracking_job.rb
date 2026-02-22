@@ -18,11 +18,13 @@ class SendInvoicePaidTrackingJob
 
     # GA4 Measurement Protocol — purchase event
     begin
+      attribution = user.attribution_id
       Tracking::Ga4MeasurementProtocol.track_purchase(
         user: user,
         transaction_id: invoice_id,
         value: amount,
-        currency: currency
+        currency: currency,
+        ga_client_id: attribution&.ga_client_id
       )
     rescue StandardError => e
       Rails.logger.error("Invoice tracking GA4 error: #{e.message}")
@@ -60,7 +62,7 @@ class SendInvoicePaidTrackingJob
       Tracking::Customerio.identify(user: user)
       Tracking::Customerio.track(
         user: user,
-        event_name: params['is_first_invoice'] ? 'subscription_started' : 'subscription_renewed',
+        event_name: 'subscription_renewed',
         data: {
           invoice_id: invoice_id,
           amount: amount,

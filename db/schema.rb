@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_22_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_120001) do
     t.datetime "captured_at", null: false
     t.datetime "created_at", null: false
     t.string "fbclid"
+    t.string "ga_client_id"
     t.string "gbraid"
     t.string "gclid"
     t.string "landing_page"

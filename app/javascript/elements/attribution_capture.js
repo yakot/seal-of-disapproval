@@ -57,6 +57,15 @@ export default class extends HTMLElement {
     const stored = JSON.parse(localStorage.getItem(this.constructor.STORAGE_KEY) || '{}')
     if (Object.keys(stored).length === 0) return
 
+    // Capture GA4 client_id from the _ga cookie
+    const gaCookie = document.cookie.split('; ').find(c => c.startsWith('_ga='))
+    if (gaCookie) {
+      const parts = gaCookie.split('.')
+      if (parts.length >= 4) {
+        stored.ga_client_id = parts.slice(2).join('.')
+      }
+    }
+
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
 
     fetch('/attribution_ids', {

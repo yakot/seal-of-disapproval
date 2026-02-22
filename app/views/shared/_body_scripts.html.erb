@@ -1,0 +1,7 @@
+<% if session.delete(:track_signup) %>
+  <analytics-events
+    data-signup="true"
+    data-twitter-signup-event-id="<%= ENV['TWITTER_SIGNUP_EVENT_ID'] %>"
+    data-user-id="<%= current_user&.id %>"
+  ></analytics-events>
+<% end %>

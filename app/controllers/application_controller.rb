@@ -176,6 +176,7 @@ class ApplicationController < ActionController::Base
       policy.connect_src :self, 'https://api-iam.intercom.io', 'wss://nexus-websocket-a.intercom.io',
                           'https://www.google-analytics.com', 'https://analytics.google.com',
                           'https://region1.google-analytics.com',
+                          'https://www.google.com', 'https://googleads.g.doubleclick.net',
                           'https://www.facebook.com', 'https://connect.facebook.net',
                           'https://analytics.twitter.com',
                           'https://cdp.customer.io', 'https://*.customer.io',

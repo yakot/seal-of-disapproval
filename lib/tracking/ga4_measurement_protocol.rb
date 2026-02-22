@@ -37,9 +37,9 @@ module Tracking
       nil
     end
 
-    def track_purchase(user:, transaction_id:, value:, currency: 'USD')
+    def track_purchase(user:, transaction_id:, value:, currency: 'USD', ga_client_id: nil)
       send_event(
-        client_id: "server.#{user.id}",
+        client_id: ga_client_id.presence || "server.#{user.id}",
         user_id: user.id,
         events: [{
           name: 'purchase',
